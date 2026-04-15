@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"dir d:\\\\Coding\\\\myProjects\\\\s1lkpayAiAgent\")",
+      "Bash(npm create *)"
+    ]
+  }
+}
