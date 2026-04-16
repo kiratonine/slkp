@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  balance       Balance?
+  agentSettings AgentSettings?
+
+  @@map("users")
+}
+
+model Balance {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  amountKzt Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("balances")
+}
+
+model AgentSettings {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  isEnabled               Boolean  @default(false)
+  dailyLimitKzt           Int      @default(0)
+  perTransactionLimitKzt  Int      @default(0)
+  requireConfirmNewSeller Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("agent_settings")
+}
