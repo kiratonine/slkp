@@ -13,4 +13,12 @@ export class UsersService {
       },
     });
   }
+
+  public async findById(userId: string) {
+    return this.prismaService.user.findUnique({
+        where: {
+        id: userId,
+        },
+    });
+  }
 }
