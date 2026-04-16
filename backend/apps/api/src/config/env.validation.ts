@@ -28,6 +28,10 @@ class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  JWT_ACCESS_EXPIRES_IN!: string;
+
+  @IsString()
+  @IsNotEmpty()
   APP_NAME!: string;
 
   @IsString()

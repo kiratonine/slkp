@@ -56,3 +56,47 @@ Content-Type: application/json
   "errorCode": "AUTH_EMAIL_ALREADY_EXISTS"
 }
 ```
+
+## POST /v1/auth/login
+
+Authenticates existing user and returns JWT access token.
+
+### Headers
+
+```http
+Content-Type: application/json
+```
+
+### Request Body
+
+```Json
+{
+  "email": "denis@example.com",
+  "password": "StrongPass123"
+}
+```
+
+### Success Response — 200 OK
+
+```Json
+{
+  "accessToken": "jwt-token-here",
+  "tokenType": "Bearer",
+  "expiresIn": "7d",
+  "user": {
+    "id": "uuid",
+    "email": "denis@example.com",
+    "createdAt": "2026-04-16T16:00:00.000Z"
+  }
+}
+```
+
+### Error Response — 401 Unauthorized
+
+```Json
+{
+  "statusCode": 401,
+  "message": "Invalid credentials",
+  "errorCode": "AUTH_INVALID_CREDENTIALS"
+}
+```
