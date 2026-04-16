@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Balance } from '../../../../prisma/generated/client';
 import { PrismaService } from '../../../database/prisma/prisma.service';
+import { BalanceResponse } from '../types/balance-response.type';
 
 @Injectable()
 export class BalancesService {
@@ -13,5 +14,25 @@ export class BalancesService {
         amountKzt,
       },
     });
+  }
+
+  public async getBalanceByUserId(userId: string): Promise<BalanceResponse> {
+    const balance = await this.prismaService.balance.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    if (balance === null) {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'Balance not found',
+      });
+    }
+
+    return {
+      amountKzt: balance.amountKzt,
+      updatedAt: balance.updatedAt.toISOString(),
+    };
   }
 }
