@@ -1,0 +1,1 @@
+export const INITIAL_BALANCE_KZT = 5000;
