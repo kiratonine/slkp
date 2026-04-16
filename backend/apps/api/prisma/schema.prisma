@@ -8,15 +8,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  passwordHash  String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+enum AgentSessionStatus {
+  ACTIVE
+  REVOKED
+}
 
-  balance       Balance?
-  agentSettings AgentSettings?
+enum BridgePaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum BridgePaymentDecision {
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  passwordHash    String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  balance         Balance?
+  agentSettings   AgentSettings?
+  agentSessions   AgentSession[]
 
   @@map("users")
 }
@@ -46,4 +63,50 @@ model AgentSettings {
   user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("agent_settings")
+}
+
+model AgentSession {
+  id                     String             @id @default(uuid())
+  userId                 String
+  name                   String
+  tokenHash              String
+  status                 AgentSessionStatus @default(ACTIVE)
+  expiresAt              DateTime
+  revokedAt              DateTime?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bridgePayments         BridgePayment[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("agent_sessions")
+}
+
+model BridgePayment {
+  id                    String                @id @default(uuid())
+  agentSessionId        String
+  userId                String
+  idempotencyKey        String
+  sellerUrl             String
+  purpose               String?
+  paymentRequiredB64    String
+  paymentSignatureB64   String?
+  amountAtomic          String?
+  asset                 String?
+  network               String?
+  estimatedKztDebit     Int?
+  decision              BridgePaymentDecision?
+  rejectionReason       String?
+  status                BridgePaymentStatus   @default(PENDING)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  agentSession          AgentSession          @relation(fields: [agentSessionId], references: [id], onDelete: Cascade)
+
+  @@unique([agentSessionId, idempotencyKey])
+  @@index([userId])
+  @@index([status])
+  @@map("bridge_payments")
 }

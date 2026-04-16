@@ -8,6 +8,8 @@ import { appConfig } from './config/app.config';
 import { authConfig } from './config/auth.config';
 import { validateEnvironment } from './config/env.validation';
 import { PrismaModule } from './database/prisma/prisma.module';
+import { AgentSessionsModule } from './modules/agent-sessions/agent-sessions.module';
+import { BridgeModule } from './modules/bridge/bridge.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { PrismaModule } from './database/prisma/prisma.module';
     UsersModule,
     BalancesModule,
     AgentSettingsModule,
+    AgentSessionsModule,
+    BridgeModule,
   ],
 })
 export class AppModule {}
