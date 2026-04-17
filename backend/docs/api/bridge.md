@@ -9,12 +9,14 @@ At this stage endpoint validates:
 - revoke status
 - expiration
 - idempotency
+- payment payload format
+- enabled agent payments
+- per transaction limit
+- current user balance
 
 ### Headers
 
-```http
 Content-Type: application/json
-```
 
 ### Request Body
 
@@ -22,18 +24,32 @@ Content-Type: application/json
 {
   "sessionToken": "eyJ...",
   "sellerUrl": "https://seller.dev/paid/usdc",
-  "paymentRequiredB64": "eyJ4NDAyVmVyc2lvbiI6Mn0=",
+  "paymentRequiredB64": "BASE64_STRING_HERE",
   "idempotencyKey": "demo-key-001",
   "purpose": "premium fx quote"
 }
 ```
 
-### Example Response
+### Example Success Response
 
-```Json
+```json
+{
+  "status": "ok",
+  "paymentId": "uuid",
+  "paymentSignatureB64": "base64-mock-signature",
+  "asset": "USDC",
+  "amountAtomic": "0.1",
+  "network": "solana",
+  "estimatedKztDebit": 50
+}
+```
+
+### Example Rejected Response
+
+```json
 {
   "status": "rejected",
   "paymentId": "uuid",
-  "reason": "Bridge payment execution is not implemented yet"
+  "reason": "Per transaction limit exceeded"
 }
 ```

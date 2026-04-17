@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { AgentSettingsService } from '../agent-settings/services/agent-settings.service';
+import { BalancesService } from '../balances/services/balances.service';
 import { BridgeController } from './controllers/bridge.controller';
 import { BridgeIdempotencyService } from './services/bridge-idempotency.service';
+import { BridgePaymentRequiredParserService } from './services/bridge-payment-required-parser.service';
+import { BridgePaymentValidatorService } from './services/bridge-payment-validator.service';
 import { BridgeService } from './services/bridge.service';
 import { BridgeSessionVerifierService } from './services/bridge-session-verifier.service';
 
@@ -22,13 +26,19 @@ import { BridgeSessionVerifierService } from './services/bridge-session-verifier
   ],
   controllers: [BridgeController],
   providers: [
+    BalancesService,
+    AgentSettingsService,
     BridgeSessionVerifierService,
     BridgeIdempotencyService,
+    BridgePaymentRequiredParserService,
+    BridgePaymentValidatorService,
     BridgeService,
   ],
   exports: [
     BridgeSessionVerifierService,
     BridgeIdempotencyService,
+    BridgePaymentRequiredParserService,
+    BridgePaymentValidatorService,
     BridgeService,
   ],
 })
