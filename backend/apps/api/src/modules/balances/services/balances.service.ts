@@ -35,4 +35,21 @@ export class BalancesService {
       updatedAt: balance.updatedAt.toISOString(),
     };
   }
+
+  public async getBalanceEntityByUserId(userId: string) {
+    const balance = await this.prismaService.balance.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    if (balance === null) {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'Balance not found',
+      });
+    }
+
+    return balance;
+  }
 }
