@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import PhoneFrame from "../components/PhoneFrame";
 import { LogOut, User as UserIcon } from "lucide-react";
+import BalanceCard from "../components/BalanceCard";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
@@ -41,9 +42,7 @@ export default function DashboardPage() {
 
         {/* Placeholder sections */}
         <div className="space-y-3">
-          <div className="bg-gray-50 rounded-2xl p-5 border border-dashed border-gray-200 text-center">
-            <p className="text-sm text-gray-400">Баланс — скоро</p>
-          </div>
+          <BalanceCard />
           <div className="bg-gray-50 rounded-2xl p-5 border border-dashed border-gray-200 text-center">
             <p className="text-sm text-gray-400">Настройки AI-агента — скоро</p>
           </div>
