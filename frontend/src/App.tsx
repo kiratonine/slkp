@@ -1,66 +1,26 @@
-import { useState } from 'react';
-import PhoneFrame from './components/PhoneFrame';
-import CardPage from './pages/CardPage';
-import AIAgentPage from './pages/AIAgentPage';
-import SetLimitPage from './pages/SetLimitPage';
-import LinkAgentPage from './pages/LinkAgentPage';
-import PaymentConfirmPage from './pages/PaymentConfirmPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
-import { Screen, AgentState } from './types';
-
-const INITIAL_AGENT: AgentState = {
-  enabled: false,
-  dailyLimit: 0,
-  agentName: '',
-  agentKey: '',
-  linked: false,
-  spentToday: 0,
-};
+import { Routes, Route, Navigate } from "react-router";
+import { useAuth } from "./contexts/AuthContext";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('card');
-  const [agent, setAgent] = useState<AgentState>(INITIAL_AGENT);
+  const { isLoading } = useAuth();
 
-  const navigate = (s: Screen) => setScreen(s);
-
-  const toggleAgent = () =>
-    setAgent(prev => ({ ...prev, enabled: !prev.enabled }));
-
-  const saveLimit = (limit: number) =>
-    setAgent(prev => ({ ...prev, dailyLimit: limit }));
-
-  const linkAgent = (name: string, key: string) =>
-    setAgent(prev => ({ ...prev, agentName: name, agentKey: key, linked: true }));
-
-  const handlePaymentDone = (amount: number) =>
-    setAgent(prev => ({ ...prev, spentToday: prev.spentToday + amount }));
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Загрузка...</p>
+      </div>
+    );
+  }
 
   return (
-    <PhoneFrame>
-      {screen === 'card' && (
-        <CardPage onNavigate={navigate} agentEnabled={agent.enabled && agent.linked} />
-      )}
-      {screen === 'ai-agent' && (
-        <AIAgentPage onNavigate={navigate} agent={agent} onToggle={toggleAgent} />
-      )}
-      {screen === 'set-limit' && (
-        <SetLimitPage onNavigate={navigate} currentLimit={agent.dailyLimit} onSave={saveLimit} />
-      )}
-      {screen === 'link-agent' && (
-        <LinkAgentPage
-          onNavigate={navigate}
-          onLink={linkAgent}
-          linked={agent.linked}
-          agentName={agent.agentName}
-          agentKey={agent.agentKey}
-        />
-      )}
-      {screen === 'payment-confirm' && (
-        <PaymentConfirmPage onNavigate={navigate} agent={agent} onPaymentDone={handlePaymentDone} />
-      )}
-      {screen === 'payment-success' && (
-        <PaymentSuccessPage onNavigate={navigate} agent={agent} />
-      )}
-    </PhoneFrame>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }
