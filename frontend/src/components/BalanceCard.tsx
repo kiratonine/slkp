@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Wallet } from "lucide-react";
-import { balanceService } from "../services/balance/balanceServices";
+import { balanceService } from "../services/balance/balanceService";
 import { ApiError } from "../services/api/client";
 import type { Balance } from "../types/auth";
 
