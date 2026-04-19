@@ -8,6 +8,11 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  app.enableCors({
+    origin: ['https://slkp.vercel.app'],
+    credentials: true,
+  });
+
   app.setGlobalPrefix('v1');
 
   app.useGlobalPipes(
