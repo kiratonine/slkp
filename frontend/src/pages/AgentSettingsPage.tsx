@@ -116,7 +116,7 @@ export default function AgentSettingsPage() {
               >
                 <span
                   className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                    draft.isEnabled ? "translate-x-6" : "translate-x-0.5"
+                    draft.isEnabled ? "translate-x-0.5" : "-translate-x-5.5"
                   }`}
                 />
               </button>
@@ -130,14 +130,14 @@ export default function AgentSettingsPage() {
               <input
                 type="number"
                 min={0}
-                value={draft.dailyLimitKzt}
+                value={draft.dailyLimitKzt === 0 ? "" : draft.dailyLimitKzt}
                 onChange={(e) =>
                   setDraft({
                     ...draft,
                     dailyLimitKzt: Number(e.target.value),
                   })
                 }
-                className="w-full text-lg font-semibold text-gray-900 outline-none"
+                className="w-full text-lg font-semibold text-gray-900 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
 
@@ -149,14 +149,18 @@ export default function AgentSettingsPage() {
               <input
                 type="number"
                 min={0}
-                value={draft.perTransactionLimitKzt}
+                value={
+                  draft.perTransactionLimitKzt === 0
+                    ? ""
+                    : draft.perTransactionLimitKzt
+                }
                 onChange={(e) =>
                   setDraft({
                     ...draft,
                     perTransactionLimitKzt: Number(e.target.value),
                   })
                 }
-                className="w-full text-lg font-semibold text-gray-900 outline-none"
+                className="w-full text-lg font-semibold text-gray-900 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
 
@@ -187,8 +191,8 @@ export default function AgentSettingsPage() {
                 <span
                   className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
                     draft.requireConfirmNewSeller
-                      ? "translate-x-6"
-                      : "translate-x-0.5"
+                      ? "translate-x-0.5"
+                      : "-translate-x-5.5"
                   }`}
                 />
               </button>
