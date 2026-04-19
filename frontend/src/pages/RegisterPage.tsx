@@ -6,8 +6,13 @@ import PhoneFrame from "../components/PhoneFrame";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
-  const { register } = useAuth();
+  const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  if (isAuthenticated) {
+    navigate("/dashboard", { replace: true });
+    return null;
+  }
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
