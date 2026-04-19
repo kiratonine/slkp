@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AgentSettingsPage from "./pages/AgentSettingsPage";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -25,6 +26,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/agent-settings"
+        element={
+          <ProtectedRoute>
+            <AgentSettingsPage />
           </ProtectedRoute>
         }
       />
