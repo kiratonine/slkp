@@ -82,32 +82,87 @@ export class BridgeService {
         payment: decodedPayment,
       });
 
-      const approvedPayment = await this.prismaService.bridgePayment.update({
-        where: {
-          id: payment.id,
-        },
-        data: {
-          decision: BridgePaymentDecision.APPROVED,
-          status: BridgePaymentStatus.SUCCEEDED,
-          amountAtomic: validationResult.amountAtomic,
-          asset: validationResult.asset,
-          network: validationResult.network,
-          estimatedKztDebit: validationResult.estimatedKztDebit,
-          paymentSignatureB64: this.createMockPaymentSignature(dto.paymentRequiredB64),
-        },
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const balance = await tx.balance.findUnique({
+          where: { userId: verifiedSession.userId },
+        });
+
+        if (!balance) {
+          throw new Error('Balance not found');
+        }
+
+        const todaySpent = await tx.ledgerEntry.aggregate({
+          where: {
+            userId: verifiedSession.userId,
+            createdAt: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            },
+          },
+          _sum: {
+            amountKzt: true,
+          },
+        });
+
+        const spentToday = Math.abs(todaySpent._sum.amountKzt ?? 0);
+
+        if (
+          spentToday + validationResult.estimatedKztDebit >
+          agentSettings.dailyLimitKzt
+        ) {
+          throw new Error('Daily limit exceeded');
+        }
+
+        if (balance.amountKzt < validationResult.estimatedKztDebit) {
+          throw new Error('Insufficient funds');
+        }
+
+        await tx.balance.update({
+          where: { userId: verifiedSession.userId },
+          data: {
+            amountKzt: {
+              decrement: validationResult.estimatedKztDebit,
+            },
+          },
+        });
+
+        const updatedPayment = await tx.bridgePayment.update({
+          where: { id: payment.id },
+          data: {
+            decision: BridgePaymentDecision.APPROVED,
+            status: BridgePaymentStatus.SUCCEEDED,
+            amountAtomic: validationResult.amountAtomic,
+            asset: validationResult.asset,
+            network: validationResult.network,
+            estimatedKztDebit: validationResult.estimatedKztDebit,
+            paymentSignatureB64: this.createMockPaymentSignature(dto.paymentRequiredB64),
+            executedAt: new Date(),
+          },
+        });
+
+        await tx.ledgerEntry.create({
+          data: {
+            userId: verifiedSession.userId,
+            paymentId: payment.id,
+            amountKzt: -validationResult.estimatedKztDebit,
+            type: 'DEBIT',
+          },
+        });
+
+        return updatedPayment;
       });
 
       return {
         status: 'ok',
-        paymentId: approvedPayment.id,
-        paymentSignatureB64: approvedPayment.paymentSignatureB64 ?? '',
-        asset: approvedPayment.asset ?? '',
-        amountAtomic: approvedPayment.amountAtomic ?? '',
-        network: approvedPayment.network ?? '',
-        estimatedKztDebit: approvedPayment.estimatedKztDebit ?? 0,
+        paymentId: result.id,
+        paymentSignatureB64: result.paymentSignatureB64 ?? '',
+        asset: result.asset ?? '',
+        amountAtomic: result.amountAtomic ?? '',
+        network: result.network ?? '',
+        estimatedKztDebit: result.estimatedKztDebit ?? 0,
       };
     } catch (error: unknown) {
-      const rejectionReason = this.extractErrorMessage(error);
+      let rejectionReason = this.extractErrorMessage(error);
+      rejectionReason = this.normalizeRejectionReason(rejectionReason);
 
       const rejectedPayment = await this.prismaService.bridgePayment.update({
         where: {
@@ -126,6 +181,22 @@ export class BridgeService {
         reason: rejectedPayment.rejectionReason ?? 'Payment was rejected',
       };
     }
+  }
+
+  private normalizeRejectionReason(reason: string): string {
+    if (reason.includes('Daily limit')) {
+      return 'Daily limit exceeded';
+    }
+
+    if (reason.includes('Insufficient funds')) {
+      return 'Insufficient funds';
+    }
+
+    if (reason.includes('Malformed')) {
+      return 'Malformed PAYMENT-REQUIRED payload';
+    }
+
+    return 'Payment rejected';
   }
 
   private createMockPaymentSignature(paymentRequiredB64: string): string {

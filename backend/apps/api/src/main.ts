@@ -8,6 +8,11 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  app.enableCors({
+    origin: ['https://slkp.vercel.app'],
+    credentials: true,
+  });
+
   app.setGlobalPrefix('v1');
 
   app.useGlobalPipes(
@@ -28,7 +33,7 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
-  const port = configService.get<number>('port') ?? 3001;
-  await app.listen(port);
+  const port = Number(configService.get<string>('PORT') ?? 3001);
+  await app.listen(port, '0.0.0.0');
 }
 void bootstrap();

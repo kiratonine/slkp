@@ -16,7 +16,9 @@ At this stage endpoint validates:
 
 ### Headers
 
+```http
 Content-Type: application/json
+```
 
 ### Request Body
 
