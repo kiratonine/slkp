@@ -12,6 +12,7 @@ import { BridgeIdempotencyService } from './bridge-idempotency.service';
 import { BridgePaymentRequiredParserService } from './bridge-payment-required-parser.service';
 import { BridgePaymentValidatorService } from './bridge-payment-validator.service';
 import { BridgeSessionVerifierService } from './bridge-session-verifier.service';
+import { SolanaService } from '../../solana/services/solana.service';
 
 @Injectable()
 export class BridgeService {
@@ -23,6 +24,7 @@ export class BridgeService {
     private readonly bridgeIdempotencyService: BridgeIdempotencyService,
     private readonly bridgePaymentRequiredParserService: BridgePaymentRequiredParserService,
     private readonly bridgePaymentValidatorService: BridgePaymentValidatorService,
+    private readonly solanaService: SolanaService,
   ) {}
 
   public async pay(dto: BridgePayDto): Promise<BridgePayResponse> {
@@ -82,12 +84,30 @@ export class BridgeService {
         payment: decodedPayment,
       });
 
+      let solanaTransferResult:
+        | {
+            signature: string;
+            toAddress: string;
+          }
+        | null = null;
+
+      if (validationResult.asset === 'SOL') {
+        if (decodedPayment.payTo === undefined || decodedPayment.payTo.length === 0) {
+          throw new Error('Missing payTo address for SOL payment');
+        }
+
+        solanaTransferResult = await this.solanaService.transferSol({
+          toAddress: decodedPayment.payTo,
+          amountSol: Number(validationResult.amountAtomic),
+        });
+      }
+
       const result = await this.prismaService.$transaction(async (tx) => {
-        const balance = await tx.balance.findUnique({
+        const balanceEntity = await tx.balance.findUnique({
           where: { userId: verifiedSession.userId },
         });
 
-        if (!balance) {
+        if (balanceEntity === null) {
           throw new Error('Balance not found');
         }
 
@@ -105,14 +125,11 @@ export class BridgeService {
 
         const spentToday = Math.abs(todaySpent._sum.amountKzt ?? 0);
 
-        if (
-          spentToday + validationResult.estimatedKztDebit >
-          agentSettings.dailyLimitKzt
-        ) {
+        if (spentToday + validationResult.estimatedKztDebit > agentSettings.dailyLimitKzt) {
           throw new Error('Daily limit exceeded');
         }
 
-        if (balance.amountKzt < validationResult.estimatedKztDebit) {
+        if (balanceEntity.amountKzt < validationResult.estimatedKztDebit) {
           throw new Error('Insufficient funds');
         }
 
@@ -136,6 +153,8 @@ export class BridgeService {
             estimatedKztDebit: validationResult.estimatedKztDebit,
             paymentSignatureB64: this.createMockPaymentSignature(dto.paymentRequiredB64),
             executedAt: new Date(),
+            solanaTxSignature: solanaTransferResult?.signature ?? null,
+            payToAddress: decodedPayment.payTo ?? null,
           },
         });
 
@@ -194,6 +213,14 @@ export class BridgeService {
 
     if (reason.includes('Malformed')) {
       return 'Malformed PAYMENT-REQUIRED payload';
+    }
+
+    if (reason.includes('Missing payTo')) {
+      return 'Missing payTo address for SOL payment';
+    }
+
+    if (reason.includes('TREASURY_PRIVATE_KEY')) {
+      return 'Treasury wallet is not configured';
     }
 
     return 'Payment rejected';
