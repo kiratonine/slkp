@@ -41,6 +41,18 @@ class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   APP_DESCRIPTION!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SOLANA_RPC_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  TREASURY_PRIVATE_KEY!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SOLANA_COMMITMENT!: string;
 }
 
 export function validateEnvironment(config: Record<string, unknown>): EnvironmentVariables {

@@ -10,12 +10,14 @@ import { validateEnvironment } from './config/env.validation';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { AgentSessionsModule } from './modules/agent-sessions/agent-sessions.module';
 import { BridgeModule } from './modules/bridge/bridge.module';
+import { solanaConfig } from './config/solana.config';
+import { SolanaModule } from './modules/solana/solana.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, authConfig],
+      load: [appConfig, solanaConfig, authConfig],
       validate: validateEnvironment,
     }),
     PrismaModule,
@@ -25,6 +27,7 @@ import { BridgeModule } from './modules/bridge/bridge.module';
     AgentSettingsModule,
     AgentSessionsModule,
     BridgeModule,
+    SolanaModule,
   ],
 })
 export class AppModule {}
