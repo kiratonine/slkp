@@ -1,7 +1,8 @@
-import { ErrorCode } from '../enums/error-code.enum';
-
 export type ApiErrorResponse = {
   statusCode: number;
+  error: string;
   message: string;
-  errorCode: ErrorCode;
+  errorCode?: string;
+  timestamp: string;
+  path: string;
 };

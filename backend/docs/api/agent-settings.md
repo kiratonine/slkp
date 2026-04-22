@@ -24,6 +24,16 @@ Authorization: Bearer <token>
 
 ### Error Response — 401 Unauthorized
 
+```json
+{
+  "statusCode": 401,
+  "error": "Unauthorized",
+  "message": "Unauthorized",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/settings/agent-payments"
+}
+```
+
 ## PUT /v1/settings/agent-payments
 
 Updates current authenticated user's agent payment settings.
@@ -59,4 +69,25 @@ Content-Type: application/json
 ```
 
 ### Error Response — 400 Bad Request
+
+```json
+{
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "Invalid request",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/settings/agent-payments"
+}
+```
+
 ### Error Response — 401 Unauthorized
+
+```json
+{
+  "statusCode": 401,
+  "error": "Unauthorized",
+  "message": "Unauthorized",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/settings/agent-payments"
+}
+```

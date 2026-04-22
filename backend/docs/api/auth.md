@@ -52,12 +52,25 @@ Content-Type: application/json
 ```Json
 {
   "statusCode": 400,
+  "error": "Bad Request",
   "message": "Email already exists",
-  "errorCode": "AUTH_EMAIL_ALREADY_EXISTS"
+  "errorCode": "AUTH_EMAIL_ALREADY_EXISTS",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/auth/register"
 }
 ```
 
 ### Error Response — 400 Validation Error
+
+```json
+{
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "email must be an email",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/auth/register"
+}
+```
 
 ## POST /v1/auth/login
 
@@ -95,12 +108,25 @@ Content-Type: application/json
 
 ### Error Response — 400 Bad Request
 
-### Error Response — 401 Unauthorized
-
 ```Json
 {
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "Invalid request",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/auth/login"
+}
+```
+
+### Error Response — 401 Unauthorized
+
+```json
+{
   "statusCode": 401,
+  "error": "Unauthorized",
   "message": "Invalid credentials",
-  "errorCode": "AUTH_INVALID_CREDENTIALS"
+  "errorCode": "AUTH_INVALID_CREDENTIALS",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/auth/login"
 }
 ```

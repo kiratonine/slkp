@@ -21,3 +21,13 @@ Authorization: Bearer <token>
 ```
 
 ### Error Response — 401 Unauthorized
+
+```json
+{
+  "statusCode": 401,
+  "error": "Unauthorized",
+  "message": "Unauthorized",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/users/me"
+}
+```

@@ -79,7 +79,11 @@ Content-Type: application/json
 ```json
 {
   "statusCode": 401,
-  "message": "Invalid or expired session token"
+  "error": "Unauthorized",
+  "message": "Invalid or expired session token",
+  "errorCode": "AGENT_SESSION_INVALID",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/bridge/pay"
 }
 ```
 
@@ -88,7 +92,10 @@ Content-Type: application/json
 ```json
 {
   "statusCode": 409,
+  "error": "Conflict",
   "message": "Idempotency key conflict",
-  "errorCode": "IDEMPOTENCY_CONFLICT"
+  "errorCode": "IDEMPOTENCY_CONFLICT",
+  "timestamp": "2026-04-23T10:00:00.000Z",
+  "path": "/v1/bridge/pay"
 }
 ```

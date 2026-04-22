@@ -14,9 +14,10 @@ import { BridgePaymentValidatorService } from './bridge-payment-validator.servic
 import { BridgeSessionVerifierService } from './bridge-session-verifier.service';
 import { SolanaService } from '../../solana/services/solana.service';
 import { ListBridgePaymentsResponse } from '../types/list-bridge-payments-response.type';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { GetBridgePaymentResponse } from '../types/get-bridge-payment-response.type';
 import { ErrorCode } from '../../../common/enums/error-code.enum';
+
 
 @Injectable()
 export class BridgeService {
@@ -97,7 +98,11 @@ export class BridgeService {
 
       if (validationResult.asset === 'SOL') {
         if (decodedPayment.payTo === undefined || decodedPayment.payTo.length === 0) {
-          throw new Error('Missing payTo address for SOL payment');
+          throw new BadRequestException({
+            statusCode: 400,
+            message: 'Missing payTo address for SOL payment',
+            errorCode: ErrorCode.PAYMENT_REQUIRED_MALFORMED,
+          });
         }
 
         solanaTransferResult = await this.solanaService.transferSol({
@@ -134,11 +139,19 @@ export class BridgeService {
         const spentToday = Math.abs(todaySpent._sum.amountKzt ?? 0);
 
         if (spentToday + validationResult.estimatedKztDebit > agentSettings.dailyLimitKzt) {
-          throw new Error('Daily limit exceeded');
+          throw new BadRequestException({
+            statusCode: 400,
+            message: 'Daily limit exceeded',
+            errorCode: ErrorCode.DAILY_LIMIT_EXCEEDED,
+          });
         }
 
         if (balanceEntity.amountKzt < validationResult.estimatedKztDebit) {
-          throw new Error('Insufficient funds');
+          throw new BadRequestException({
+            statusCode: 400,
+            message: 'Insufficient funds',
+            errorCode: ErrorCode.INSUFFICIENT_FUNDS,
+          });
         }
 
         await tx.balance.update({
@@ -227,11 +240,27 @@ export class BridgeService {
       return 'Missing payTo address for SOL payment';
     }
 
-    if (reason.includes('TREASURY_PRIVATE_KEY')) {
+    if (reason.includes('Agent payments are disabled')) {
+      return 'Agent payments are disabled';
+    }
+
+    if (reason.includes('Unsupported network')) {
+      return 'Unsupported network';
+    }
+
+    if (reason.includes('Unsupported asset')) {
+      return 'Unsupported asset';
+    }
+
+    if (reason.includes('Balance not found')) {
+      return 'Balance not found';
+    }
+
+    if (reason.includes('Treasury wallet is not configured')) {
       return 'Treasury wallet is not configured';
     }
 
-    return 'Payment rejected';
+    return reason;
   }
 
   private createMockPaymentSignature(paymentRequiredB64: string): string {
@@ -251,10 +280,17 @@ export class BridgeService {
       if (
         typeof response === 'object' &&
         response !== null &&
-        'message' in response &&
-        typeof (response as { message?: unknown }).message === 'string'
+        'message' in response
       ) {
-        return (response as { message: string }).message;
+        const message = (response as { message?: unknown }).message;
+
+        if (typeof message === 'string') {
+          return message;
+        }
+
+        if (Array.isArray(message)) {
+          return message.join(', ');
+        }
       }
     }
 
