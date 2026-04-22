@@ -14,6 +14,7 @@ import { CreateAgentSessionResponse } from '../types/create-agent-session-respon
 import { ListAgentSessionsResponse } from '../types/list-agent-sessions-response.type';
 import { RevokeAgentSessionResponse } from '../types/revoke-agent-session-response.type';
 import { AgentSessionsService } from '../services/agent-sessions.service';
+import { GetAgentSessionResponse } from '../types/get-agent-session-response.type';
 
 @ApiTags('Agent Sessions')
 @ApiBearerAuth()
@@ -40,6 +41,7 @@ export class AgentSessionsController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'List current user agent sessions',
+    description: 'Returns all agent sessions created by the authenticated user.',
   })
   @ApiOkResponse({
     description: 'Returns current user agent sessions',
@@ -61,5 +63,21 @@ export class AgentSessionsController {
     @Param('id') sessionId: string,
   ): Promise<RevokeAgentSessionResponse> {
     return this.agentSessionsService.revoke(user.sub, sessionId);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Get current user agent session by id',
+    description: 'Returns one agent session that belongs to the authenticated user.',
+  })
+  @ApiOkResponse({
+    description: 'Returns current user agent session by id',
+  })
+  public async getById(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') sessionId: string,
+  ): Promise<GetAgentSessionResponse> {
+    return this.agentSessionsService.getById(user.sub, sessionId);
   }
 }

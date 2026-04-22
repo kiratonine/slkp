@@ -3,6 +3,7 @@ import { AgentSettings } from '../../../../prisma/generated/client';
 import { PrismaService } from '../../../database/prisma/prisma.service';
 import { UpdateAgentSettingsDto } from '../dto/update-agent-settings.dto';
 import { AgentSettingsResponse } from '../types/agent-settings-response.type';
+import { ErrorCode } from '../../../common/enums/error-code.enum';
 
 @Injectable()
 export class AgentSettingsService {
@@ -31,6 +32,7 @@ export class AgentSettingsService {
       throw new NotFoundException({
         statusCode: 404,
         message: 'Agent settings not found',
+        errorCode: ErrorCode.AGENT_SETTINGS_NOT_FOUND,
       });
     }
 
@@ -57,6 +59,7 @@ export class AgentSettingsService {
       throw new NotFoundException({
         statusCode: 404,
         message: 'Agent settings not found',
+        errorCode: ErrorCode.AGENT_SETTINGS_NOT_FOUND,
       });
     }
 

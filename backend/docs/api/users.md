@@ -19,3 +19,5 @@ Authorization: Bearer <token>
   "createdAt": "..."
 }
 ```
+
+### Error Response — 401 Unauthorized

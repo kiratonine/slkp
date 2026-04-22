@@ -57,6 +57,8 @@ Content-Type: application/json
 }
 ```
 
+### Error Response — 400 Validation Error
+
 ## POST /v1/auth/login
 
 Authenticates existing user and returns JWT access token.
@@ -90,6 +92,8 @@ Content-Type: application/json
   }
 }
 ```
+
+### Error Response — 400 Bad Request
 
 ### Error Response — 401 Unauthorized
 

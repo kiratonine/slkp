@@ -15,6 +15,8 @@ import { BridgePayDto } from '../dto/bridge-pay.dto';
 import { BridgeService } from '../services/bridge.service';
 import { BridgePayResponse } from '../types/bridge-pay-response.type';
 import { ListBridgePaymentsResponse } from '../types/list-bridge-payments-response.type';
+import { Param } from '@nestjs/common';
+import { GetBridgePaymentResponse } from '../types/get-bridge-payment-response.type';
 
 @ApiTags('Bridge')
 @Controller('bridge')
@@ -48,6 +50,7 @@ export class BridgeController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List current user bridge payments',
+    description: 'Returns bridge payment history for the authenticated user.',
   })
   @ApiOkResponse({
     description: 'Returns current user bridge payments',
@@ -56,5 +59,22 @@ export class BridgeController {
     @CurrentUser() user: JwtPayload,
   ): Promise<ListBridgePaymentsResponse> {
     return this.bridgeService.listPayments(user.sub);
+  }
+
+  @Get('payments/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get current user bridge payment by id',
+    description: 'Returns one bridge payment that belongs to the authenticated user.',
+  })
+  @ApiOkResponse({
+    description: 'Returns current user bridge payment by id',
+  })
+  public async getPaymentById(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') paymentId: string,
+  ): Promise<GetBridgePaymentResponse> {
+    return this.bridgeService.getPaymentById(user.sub, paymentId);
   }
 }

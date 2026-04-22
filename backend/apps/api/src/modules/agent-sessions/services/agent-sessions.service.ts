@@ -7,6 +7,8 @@ import { CreateAgentSessionResponse } from '../types/create-agent-session-respon
 import { ListAgentSessionsResponse } from '../types/list-agent-sessions-response.type';
 import { RevokeAgentSessionResponse } from '../types/revoke-agent-session-response.type';
 import { AgentSessionTokenService } from './agent-session-token.service';
+import { GetAgentSessionResponse } from '../types/get-agent-session-response.type';
+import { ErrorCode } from '../../../common/enums/error-code.enum';
 
 @Injectable()
 export class AgentSessionsService {
@@ -29,6 +31,7 @@ export class AgentSessionsService {
       throw new NotFoundException({
         statusCode: 404,
         message: 'Agent settings not found',
+        errorCode: ErrorCode.AGENT_SETTINGS_NOT_FOUND,
       });
     }
 
@@ -135,6 +138,34 @@ export class AgentSessionsService {
         expiresAt: revokedSession.expiresAt.toISOString(),
         revokedAt: revokedSession.revokedAt?.toISOString() ?? null,
         createdAt: revokedSession.createdAt.toISOString(),
+      },
+    };
+  }
+
+  public async getById(userId: string, sessionId: string): Promise<GetAgentSessionResponse> {
+    const session = await this.prismaService.agentSession.findFirst({
+      where: {
+        id: sessionId,
+        userId,
+      },
+    });
+
+    if (session === null) {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'Agent session not found',
+        errorCode: ErrorCode.AGENT_SESSION_NOT_FOUND,
+      });
+    }
+
+    return {
+      session: {
+        id: session.id,
+        name: session.name,
+        status: session.status as AgentSessionStatusEnum,
+        expiresAt: session.expiresAt.toISOString(),
+        revokedAt: session.revokedAt?.toISOString() ?? null,
+        createdAt: session.createdAt.toISOString(),
       },
     };
   }

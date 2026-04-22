@@ -55,3 +55,40 @@ Content-Type: application/json
   "reason": "Per transaction limit exceeded"
 }
 ```
+
+### Error Response — 400 Bad Request
+
+```json
+{
+  "status": "rejected",
+  "reason": "Malformed PAYMENT-REQUIRED payload"
+}
+```
+
+### Error Response — 403 Forbidden
+
+```json
+{
+  "status": "rejected",
+  "reason": "Agent payments are disabled"
+}
+```
+
+### Error Response — 401 Unauthorized
+
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid or expired session token"
+}
+```
+
+### Error Response — 409 Conflict
+
+```json
+{
+  "statusCode": 409,
+  "message": "Idempotency key conflict",
+  "errorCode": "IDEMPOTENCY_CONFLICT"
+}
+```

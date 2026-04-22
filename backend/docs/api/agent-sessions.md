@@ -36,6 +36,24 @@ Content-Type: application/json
 }
 ```
 
+### Error Response — 401 Unauthorized
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized"
+}
+```
+
+### Error Response — 400 Bad Request
+
+```json
+{
+  "statusCode": 400,
+  "message": "Invalid request"
+}
+```
+
 ## GET /v1/agent-sessions
 
 Returns current authenticated user's agent sessions.
@@ -63,6 +81,49 @@ Authorization: Bearer <token>
 }
 ```
 
+### Error Response — 401 Unauthorized
+
+## GET /v1/agent-sessions/:id
+
+Returns one agent session that belongs to the authenticated user.
+
+### Headers
+
+```http
+Authorization: Bearer <token>
+```
+
+### Params
+
+```text
+id: agent session id
+```
+
+### Success Response
+
+```json
+{
+  "session": {
+    "id": "uuid",
+    "name": "Main CLI Agent",
+    "status": "ACTIVE",
+    "expiresAt": "2026-04-24T12:00:00.000Z",
+    "revokedAt": null,
+    "createdAt": "2026-04-17T12:00:00.000Z"
+  }
+}
+```
+
+### Error Response — 404 Not Found
+
+```json
+{
+  "statusCode": 404,
+  "message": "Agent session not found",
+  "errorCode": "AGENT_SESSION_NOT_FOUND"
+}
+```
+
 ## POST /v1/agent-sessions/:id/revoke
 
 Revokes agent session.
@@ -71,6 +132,12 @@ Revokes agent session.
 
 ```http
 Authorization: Bearer <token>
+```
+
+### Params
+
+```text
+id: agent session id
 ```
 
 ### Success Response
@@ -87,3 +154,15 @@ Authorization: Bearer <token>
   }
 }
 ```
+
+### Error Response — 404 Not Found
+
+```json
+{
+  "statusCode": 404,
+  "message": "Agent session not found",
+  "errorCode": "AGENT_SESSION_NOT_FOUND"
+}
+```
+
+### Error Response — 401 Unauthorized

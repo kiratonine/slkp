@@ -22,6 +22,8 @@ Authorization: Bearer <token>
 }
 ```
 
+### Error Response — 401 Unauthorized
+
 ## PUT /v1/settings/agent-payments
 
 Updates current authenticated user's agent payment settings.
@@ -55,3 +57,6 @@ Content-Type: application/json
   "updatedAt": "2026-04-16T16:10:00.000Z"
 }
 ```
+
+### Error Response — 400 Bad Request
+### Error Response — 401 Unauthorized

@@ -14,6 +14,9 @@ import { BridgePaymentValidatorService } from './bridge-payment-validator.servic
 import { BridgeSessionVerifierService } from './bridge-session-verifier.service';
 import { SolanaService } from '../../solana/services/solana.service';
 import { ListBridgePaymentsResponse } from '../types/list-bridge-payments-response.type';
+import { NotFoundException } from '@nestjs/common';
+import { GetBridgePaymentResponse } from '../types/get-bridge-payment-response.type';
+import { ErrorCode } from '../../../common/enums/error-code.enum';
 
 @Injectable()
 export class BridgeService {
@@ -109,7 +112,11 @@ export class BridgeService {
         });
 
         if (balanceEntity === null) {
-          throw new Error('Balance not found');
+          throw new NotFoundException({
+            statusCode: 404,
+            message: 'Balance not found',
+            errorCode: ErrorCode.BALANCE_NOT_FOUND,
+          });
         }
 
         const todaySpent = await tx.ledgerEntry.aggregate({
@@ -285,6 +292,45 @@ export class BridgeService {
         executedAt: payment.executedAt?.toISOString() ?? null,
         createdAt: payment.createdAt.toISOString(),
       })),
+    };
+  }
+
+  public async getPaymentById(
+    userId: string,
+    paymentId: string,
+  ): Promise<GetBridgePaymentResponse> {
+    const payment = await this.prismaService.bridgePayment.findFirst({
+      where: {
+        id: paymentId,
+        userId,
+      },
+    });
+
+    if (payment === null) {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'Bridge payment not found',
+        errorCode: ErrorCode.BRIDGE_PAYMENT_NOT_FOUND,
+      });
+    }
+
+    return {
+      payment: {
+        id: payment.id,
+        sellerUrl: payment.sellerUrl,
+        purpose: payment.purpose,
+        amountAtomic: payment.amountAtomic,
+        asset: payment.asset,
+        network: payment.network,
+        estimatedKztDebit: payment.estimatedKztDebit,
+        status: payment.status,
+        decision: payment.decision,
+        rejectionReason: payment.rejectionReason,
+        solanaTxSignature: payment.solanaTxSignature,
+        payToAddress: payment.payToAddress,
+        executedAt: payment.executedAt?.toISOString() ?? null,
+        createdAt: payment.createdAt.toISOString(),
+      },
     };
   }
 }

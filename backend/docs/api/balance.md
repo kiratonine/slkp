@@ -18,3 +18,15 @@ Authorization: Bearer <token>
   "updatedAt": "2026-04-16T16:00:00.000Z"
 }
 ```
+
+### Error Response — 401 Unauthorized
+
+### Error Response — 404 Not Found
+
+```json
+{
+  "statusCode": 404,
+  "message": "Balance not found",
+  "errorCode": "BALANCE_NOT_FOUND"
+}
+```

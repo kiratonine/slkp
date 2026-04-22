@@ -10,6 +10,12 @@ Contains:
 - entry type
 - creation timestamp
 
+### Headers
+
+```http
+Authorization: Bearer <token>
+```
+
 ### Success Response
 
 ```json
@@ -25,3 +31,5 @@ Contains:
   ]
 }
 ```
+
+### Error Response — 401 Unauthorized
