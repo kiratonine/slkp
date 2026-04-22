@@ -32,3 +32,6 @@ test-ledger
 
 **/prisma/generated
 **/prisma/generated/**
+
+apps/api/keys/
+apps/seller/keys/

@@ -1,15 +1,20 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator';
+import { type JwtPayload } from '../../../common/types/jwt-payload.type';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { BridgePayDto } from '../dto/bridge-pay.dto';
 import { BridgeService } from '../services/bridge.service';
 import { BridgePayResponse } from '../types/bridge-pay-response.type';
+import { ListBridgePaymentsResponse } from '../types/list-bridge-payments-response.type';
 
 @ApiTags('Bridge')
 @Controller('bridge')
@@ -36,5 +41,20 @@ export class BridgeController {
   })
   public async pay(@Body() dto: BridgePayDto): Promise<BridgePayResponse> {
     return this.bridgeService.pay(dto);
+  }
+
+  @Get('payments')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'List current user bridge payments',
+  })
+  @ApiOkResponse({
+    description: 'Returns current user bridge payments',
+  })
+  public async listPayments(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ListBridgePaymentsResponse> {
+    return this.bridgeService.listPayments(user.sub);
   }
 }

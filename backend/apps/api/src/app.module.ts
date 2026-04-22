@@ -12,6 +12,7 @@ import { AgentSessionsModule } from './modules/agent-sessions/agent-sessions.mod
 import { BridgeModule } from './modules/bridge/bridge.module';
 import { solanaConfig } from './config/solana.config';
 import { SolanaModule } from './modules/solana/solana.module';
+import { LedgerModule } from './modules/ledger/ledger.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SolanaModule } from './modules/solana/solana.module';
     AgentSessionsModule,
     BridgeModule,
     SolanaModule,
+    LedgerModule,
   ],
 })
 export class AppModule {}

@@ -13,6 +13,7 @@ import { BridgePaymentRequiredParserService } from './bridge-payment-required-pa
 import { BridgePaymentValidatorService } from './bridge-payment-validator.service';
 import { BridgeSessionVerifierService } from './bridge-session-verifier.service';
 import { SolanaService } from '../../solana/services/solana.service';
+import { ListBridgePaymentsResponse } from '../types/list-bridge-payments-response.type';
 
 @Injectable()
 export class BridgeService {
@@ -255,5 +256,35 @@ export class BridgeService {
     }
 
     return 'Payment was rejected';
+  }
+
+  public async listPayments(userId: string): Promise<ListBridgePaymentsResponse> {
+    const payments = await this.prismaService.bridgePayment.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return {
+      payments: payments.map((payment) => ({
+        id: payment.id,
+        sellerUrl: payment.sellerUrl,
+        purpose: payment.purpose,
+        amountAtomic: payment.amountAtomic,
+        asset: payment.asset,
+        network: payment.network,
+        estimatedKztDebit: payment.estimatedKztDebit,
+        status: payment.status,
+        decision: payment.decision,
+        rejectionReason: payment.rejectionReason,
+        solanaTxSignature: payment.solanaTxSignature,
+        payToAddress: payment.payToAddress,
+        executedAt: payment.executedAt?.toISOString() ?? null,
+        createdAt: payment.createdAt.toISOString(),
+      })),
+    };
   }
 }
