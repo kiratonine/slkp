@@ -15,6 +15,11 @@
 5. просмотр и изменение настроек оплат для AI-агентов
 6. создание, просмотр и отзыв agent sessions
 7. позже — bridge flow, seller flow и agent demo flow
+8. просмотр истории bridge payments
+9. просмотр детальной информации по конкретному bridge payment
+10. просмотр истории ledger
+11. просмотр детальной информации по конкретной agent session
+12. корректная обработка unified API errors
 
 ---
 
@@ -28,6 +33,15 @@
 - сделать общий типизированный слой запросов
 - сделать общий обработчик ошибок API
 - сделать отдельную страницу или секцию для тестирования backend flow
+- сделать единый parser для unified API error format
+- сделать общий тип ошибки backend:
+  - statusCode
+  - error
+  - message
+  - errorCode
+  - timestamp
+  - path
+- предусмотреть отображение бизнес-отказов bridge (`status: rejected`) отдельно от обычных HTTP ошибок
 
 Что важно:
 
@@ -167,19 +181,91 @@
 
 ---
 
-### Этап F. Подготовка под bridge
+### Этап F. Детальная информация по Agent Sessions
 
-Когда backend bridge foundation будет подключён во фронтенд, подготовить:
+Подключить:
 
-- техническую страницу / debug page для bridge сценариев
-- отображение agent sessions, которые можно использовать для bridge
-- UI для ручного тестирования `bridge/pay`
+- `GET /v1/agent-sessions/:id`
 
-Подключать позже:
+Что нужно сделать:
 
-- `POST /v1/bridge/pay`
+- сделать переход из списка session в detail view
+- на detail page отобразить:
+  - id
+  - name
+  - status
+  - expiresAt
+  - revokedAt
+  - createdAt
 
-На этом этапе фронтенд нужен в первую очередь для ручной проверки flow, а не для финального UX.
+Что протестировать:
+
+- detail page открывается по id
+- detail page не показывает чужую session
+- корректно отображается revoked session
+- фронтенд показывает ошибку, если session не найдена
+
+---
+
+### Этап G. Bridge Payments
+
+Подключить:
+
+- `GET /v1/bridge/payments`
+- `GET /v1/bridge/payments/:id`
+
+Что нужно сделать:
+
+- страница или блок “Bridge Payments”
+- список всех bridge payments пользователя
+- detail page для конкретного bridge payment
+- отображение:
+  - sellerUrl
+  - purpose
+  - amountAtomic
+  - asset
+  - network
+  - estimatedKztDebit
+  - status
+  - decision
+  - rejectionReason
+  - solanaTxSignature
+  - payToAddress
+  - executedAt
+  - createdAt
+
+Что протестировать:
+
+- список корректно загружается
+- detail page открывается по id
+- rejected payment отображается правильно
+- approved payment показывает tx signature
+- фронтенд корректно обрабатывает 404
+
+---
+
+### Этап H. Ledger
+
+Подключить:
+
+- `GET /v1/ledger`
+
+Что нужно сделать:
+
+- страница или блок “Ledger”
+- таблица истории операций
+- отображение:
+  - paymentId
+  - amountKzt
+  - type
+  - createdAt
+
+Что протестировать:
+
+- после bridge payment появляется новая ledger entry
+- debit отображается отрицательным значением
+- список отсортирован по времени
+- фронтенд корректно обрабатывает ошибки авторизации
 
 ---
 
@@ -215,6 +301,10 @@
 5. блок баланса
 6. блок настроек оплат для AI-агентов
 7. блок agent sessions
+8. bridge payments list
+9. bridge payment detail page
+10. ledger history block
+11. agent session detail page
 
 Если делать по уму, то этого уже хватит для сильного демо backend control layer.
 
@@ -228,6 +318,11 @@
 - sessionToken агента — это отдельный токен, его нельзя путать с accessToken пользователя
 - не показывать sessionToken повторно из списка, если backend его не возвращает
 - ориентироваться на текущую backend документацию в `docs/api/*.md` и Swagger `/docs`
+- bridge payment detail и agent session detail — это отдельные экраны, а не только список
+- `bridge/pay` может вернуть не только HTTP error, но и business response со `status: rejected`
+- `solanaTxSignature` нужно показывать в UI отдельно, с возможностью copy
+- sessionToken показывается только в момент создания session и должен иметь заметную кнопку copy
+- unified API errors должны отображаться одинаково во всём приложении
 
 ---
 
@@ -271,3 +366,32 @@
 - Markdown файлы в `backend/docs/api/`
 
 Именно они являются источником истины для frontend-интеграции.
+
+---
+
+## Единая обработка ошибок
+
+В бэкэнде теперь используется единый формат обработки ошибок API для HTTP-ошибок.
+
+Фронтенд должен поддерживать следующую структуру:
+
+```json
+{
+"statusCode": number,
+"error": "string",
+"message": "string",
+"errorCode": "string (optional)",
+"timestamp": "ISO string",
+"path": "string"
+}
+```
+
+Важно:
+
+- не полагайтесь только на `message`
+- если `errorCode` существует, используйте его в логике пользовательского интерфейса, когда это уместно
+- `POST /v1/bridge/pay` также может возвращать бизнес-ответ:
+  - `status: "ok"`
+  - `status: "rejected"`
+
+Этот бизнес-ответ должен обрабатываться отдельно от обычных HTTP-ошибок.
