@@ -9,6 +9,7 @@ export type BridgePaymentItem = {
   status: string;
   decision: string | null;
   rejectionReason: string | null;
+  paymentResponseB64: string | null;
   solanaTxSignature: string | null;
   payToAddress: string | null;
   executedAt: string | null;

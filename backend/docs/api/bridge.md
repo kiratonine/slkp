@@ -14,6 +14,20 @@ At this stage endpoint validates:
 - per transaction limit
 - current user balance
 
+At this stage endpoint does not finalize KZT debit immediately.
+
+It:
+- validates session token
+- validates payment requirements
+- validates limits and balance
+- creates canonical x402 `PAYMENT-SIGNATURE`
+- stores bridge payment as `PENDING`
+- returns payment signature to agent
+
+Final KZT debit and ledger entry are created only after seller successfully accepts payment and agent calls:
+
+`POST /v1/bridge/payments/:id/confirm`
+
 ### Headers
 
 ```http
@@ -38,11 +52,11 @@ Content-Type: application/json
 {
   "status": "ok",
   "paymentId": "uuid",
-  "paymentSignatureB64": "base64-mock-signature",
+  "paymentSignatureB64": "base64-x402-payment-signature",
   "asset": "USDC",
-  "amountAtomic": "0.1",
+  "amountAtomic": "10000",
   "network": "solana",
-  "estimatedKztDebit": 50
+  "estimatedKztDebit": 5
 }
 ```
 
@@ -99,3 +113,11 @@ Content-Type: application/json
   "path": "/v1/bridge/pay"
 }
 ```
+
+### Important
+
+`POST /v1/bridge/pay` only prepares payment and returns `PAYMENT-SIGNATURE`.
+
+It does not create ledger entry yet.
+
+Payment is finalized only after seller returns successful response and SDK calls confirm endpoint.

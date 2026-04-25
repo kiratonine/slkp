@@ -40,11 +40,7 @@ export class BridgeX402PaymentSignerService {
     ): Promise<Response> => {
       callCount += 1;
 
-      this.logger.log(`x402 fakeFetch call=${callCount}`);
-
       if (callCount === 1) {
-        this.logger.log('Returning synthetic 402 response to official x402 client');
-
         return new Response('{}', {
           status: 402,
           headers: {
@@ -55,12 +51,6 @@ export class BridgeX402PaymentSignerService {
       }
 
       const requestHeaders = this.extractHeadersFromFetchArgs(input, init);
-
-      this.logger.log('Inspecting retry request headers from official x402 client');
-
-      requestHeaders.forEach((value, key) => {
-        this.logger.debug(`retry header ${key}: ${value.slice(0, 300)}`);
-      });
 
       capturedPaymentSignature =
         requestHeaders.get('PAYMENT-SIGNATURE') ??
@@ -73,13 +63,12 @@ export class BridgeX402PaymentSignerService {
       }
 
       this.logger.log(
-        `Captured canonical PAYMENT-SIGNATURE length=${capturedPaymentSignature.length}`,
+        `Canonical x402 PAYMENT-SIGNATURE generated. length=${capturedPaymentSignature.length}`,
       );
 
       return new Response(
         JSON.stringify({
           ok: true,
-          captured: true,
         }),
         {
           status: 200,

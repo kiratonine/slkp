@@ -20,6 +20,7 @@ import { ErrorCode } from '../../../common/enums/error-code.enum';
 import { BridgeX402PaymentSignerService } from './bridge-x402-payment-signer.service';
 import { ConfirmBridgePaymentDto } from '../dto/confirm-bridge-payment.dto';
 import { ConfirmBridgePaymentResponse } from '../types/confirm-bridge-payment-response.type';
+import { BridgeX402PaymentResponseParserService } from './bridge-x402-payment-response-parser.service';
 
 
 @Injectable()
@@ -34,6 +35,7 @@ export class BridgeService {
     private readonly bridgePaymentValidatorService: BridgePaymentValidatorService,
     private readonly solanaService: SolanaService,
     private readonly bridgeX402PaymentSignerService: BridgeX402PaymentSignerService,
+    private readonly bridgeX402PaymentResponseParserService: BridgeX402PaymentResponseParserService,
   ) { }
 
   public async pay(dto: BridgePayDto): Promise<BridgePayResponse> {
@@ -292,6 +294,7 @@ export class BridgeService {
         status: payment.status,
         decision: payment.decision,
         rejectionReason: payment.rejectionReason,
+        paymentResponseB64: payment.paymentResponseB64,
         solanaTxSignature: payment.solanaTxSignature,
         payToAddress: payment.payToAddress,
         executedAt: payment.executedAt?.toISOString() ?? null,
@@ -331,6 +334,7 @@ export class BridgeService {
         status: payment.status,
         decision: payment.decision,
         rejectionReason: payment.rejectionReason,
+        paymentResponseB64: payment.paymentResponseB64,
         solanaTxSignature: payment.solanaTxSignature,
         payToAddress: payment.payToAddress,
         executedAt: payment.executedAt?.toISOString() ?? null,
@@ -495,6 +499,11 @@ export class BridgeService {
         },
       });
 
+      const solanaTxSignature =
+        this.bridgeX402PaymentResponseParserService.extractTransactionSignature(
+          params.dto.paymentResponseB64,
+        );
+
       const updatedPayment = await tx.bridgePayment.update({
         where: {
           id: currentPayment.id,
@@ -503,6 +512,7 @@ export class BridgeService {
           status: BridgePaymentStatus.SUCCEEDED,
           executedAt: new Date(),
           paymentResponseB64: params.dto.paymentResponseB64 ?? null,
+          solanaTxSignature: solanaTxSignature ?? currentPayment.solanaTxSignature,
         },
       });
 

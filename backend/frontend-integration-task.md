@@ -213,6 +213,10 @@
 
 - `GET /v1/bridge/payments`
 - `GET /v1/bridge/payments/:id`
+- *`POST /v1/bridge/payments/:id/confirm`
+
+*Этот endpoint вызывает agent SDK, а не обычный UI. UI может использовать его только для debug/demo.
+
 
 Что нужно сделать:
 
@@ -241,6 +245,24 @@
 - rejected payment отображается правильно
 - approved payment показывает tx signature
 - фронтенд корректно обрабатывает 404
+
+### Важно по статусам bridge payment
+
+Теперь bridge payment проходит две стадии:
+
+1. `PENDING`
+   - bridge уже создал `PAYMENT-SIGNATURE`
+   - seller ещё не подтвердил успешный доступ
+   - баланс пользователя ещё не списан
+   - ledger entry ещё не создан
+
+2. `SUCCEEDED`
+   - seller принял `PAYMENT-SIGNATURE`
+   - SDK вызвал confirm endpoint
+   - KZT баланс списан
+   - ledger entry создан
+
+Frontend должен корректно отображать оба статуса.
 
 ---
 

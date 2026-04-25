@@ -163,6 +163,49 @@ const data = await response.json();
 console.log(data);
 ```
 
+## Confirm Flow
+
+The SDK uses two-phase bridge payment lifecycle.
+
+### Phase 1 — Payment preparation
+
+SDK receives `402 Payment Required` from seller and calls:
+
+`POST /v1/bridge/pay`
+
+Bridge:
+- validates session token
+- validates x402 payment requirement
+- checks limits and balance
+- creates canonical x402 `PAYMENT-SIGNATURE`
+- stores payment as `PENDING`
+- returns `paymentId` and `paymentSignatureB64`
+
+### Phase 2 — Seller retry
+
+SDK retries original seller request with:
+
+```http
+PAYMENT-SIGNATURE: <paymentSignatureB64>
+```
+
+If seller accepts payment, it returns `200`.
+
+### Phase 3 — Bridge confirmation
+
+After seller returns success, SDK calls:
+
+`POST /v1/bridge/payments/:id/confirm`
+
+Bridge:
+
+- debits KZT balance
+- creates ledger entry
+- stores optional `PAYMENT-RESPONSE`
+- marks payment as `SUCCEEDED`
+
+This prevents KZT debit before seller confirms successful paid access.
+
 ## MVP vs Production
 
 ### MVP
@@ -173,6 +216,10 @@ Already implemented in project:
 - bridge validation
 - KZT debit and ledger
 - Solana devnet payment execution
+- official x402 seller middleware
+- canonical x402 `PAYMENT-REQUIRED`
+- bridge-generated canonical x402 `PAYMENT-SIGNATURE`
+- two-phase payment confirmation
 
 ### Production
 Planned:
