@@ -95,6 +95,7 @@ model BridgePayment {
   purpose               String?
   paymentRequiredB64    String
   paymentSignatureB64   String?
+  paymentResponseB64    String?
   amountAtomic          String?
   asset                 String?
   network               String?

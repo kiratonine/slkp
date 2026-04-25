@@ -1,26 +1,31 @@
 {
-  "name": "seller",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@s1lk/seller",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/main.js",
-    "start:dev": "ts-node src/main.ts"
+    "dev": "tsx src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@x402/core": "^2.10.0",
+    "@x402/evm": "^2.10.0",
+    "@x402/express": "^2.10.0",
+    "@x402/extensions": "^2.10.0",
+    "@x402/svm": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.19.17",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

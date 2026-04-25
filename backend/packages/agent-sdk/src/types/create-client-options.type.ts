@@ -1,4 +1,4 @@
-import { SessionTokenProvider } from './session-token-provider.type';
+import { SessionTokenProvider } from './session-token-provider.type.js';
 
 export type CreateS1lkX402ClientOptions = {
   bridgeBaseUrl: string;

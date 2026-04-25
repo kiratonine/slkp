@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { AgentRuntimeService } from './services/agent-runtime.service';
+import { AgentRuntimeService } from './services/agent-runtime.service.js';
 
 function bootstrap(): void {
   const agentRuntimeService = new AgentRuntimeService();

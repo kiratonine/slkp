@@ -1,13 +1,13 @@
-import readline from 'readline';
-import { AGENT_MESSAGES } from '../constants/agent-prompts.constants';
-import { AgentState } from '../types/agent-state.type';
-import { AgentCommandParserService } from './agent-command-parser.service';
-import { AgentFlowService } from './agent-flow.service';
+import readline from 'node:readline';
+import { AGENT_MESSAGES } from '../constants/agent-prompts.constants.js';
+import { AgentState } from '../types/agent-state.type.js';
+import { AgentCommandParserService } from './agent-command-parser.service.js';
+import { AgentPaymentService } from './agent-payment.service.js';
 
 export class AgentRuntimeService {
   private readonly state: AgentState;
   private readonly commandParserService: AgentCommandParserService;
-  private readonly agentFlowService: AgentFlowService;
+  private readonly agentPaymentService: AgentPaymentService;
   private readonly rl: readline.Interface;
 
   public constructor() {
@@ -18,7 +18,7 @@ export class AgentRuntimeService {
     };
 
     this.commandParserService = new AgentCommandParserService();
-    this.agentFlowService = new AgentFlowService();
+    this.agentPaymentService = new AgentPaymentService();
 
     this.rl = readline.createInterface({
       input: process.stdin,
@@ -95,7 +95,13 @@ export class AgentRuntimeService {
     }
 
     console.log(AGENT_MESSAGES.runningPremiumFlow);
-    await this.agentFlowService.runPremiumSolQuote(this.state.sessionToken);
+
+    try {
+      await this.agentPaymentService.runPremiumSolQuote(this.state.sessionToken);
+    } catch (error: unknown) {
+      console.error('[agent] Payment flow failed:', error);
+    }
+
     console.log(AGENT_MESSAGES.enterCommand);
   }
 }

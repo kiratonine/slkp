@@ -17,6 +17,8 @@ import { BridgePayResponse } from '../types/bridge-pay-response.type';
 import { ListBridgePaymentsResponse } from '../types/list-bridge-payments-response.type';
 import { Param } from '@nestjs/common';
 import { GetBridgePaymentResponse } from '../types/get-bridge-payment-response.type';
+import { ConfirmBridgePaymentDto } from '../dto/confirm-bridge-payment.dto';
+import { ConfirmBridgePaymentResponse } from '../types/confirm-bridge-payment-response.type';
 
 @ApiTags('Bridge')
 @Controller('bridge')
@@ -76,5 +78,30 @@ export class BridgeController {
     @Param('id') paymentId: string,
   ): Promise<GetBridgePaymentResponse> {
     return this.bridgeService.getPaymentById(user.sub, paymentId);
+  }
+
+  @Post('payments/:id/confirm')
+  @ApiOperation({
+    summary: 'Confirm bridge payment after successful seller response',
+    description:
+      'Finalizes PENDING bridge payment after seller accepted PAYMENT-SIGNATURE. Debits KZT balance, creates ledger entry and marks payment as SUCCEEDED.',
+  })
+  @ApiOkResponse({
+    description: 'Bridge payment confirmed',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid or revoked agent session token',
+  })
+  @ApiBadRequestResponse({
+    description: 'Payment cannot be confirmed',
+  })
+  public async confirmPayment(
+    @Param('id') paymentId: string,
+    @Body() dto: ConfirmBridgePaymentDto,
+  ): Promise<ConfirmBridgePaymentResponse> {
+    return this.bridgeService.confirmPayment({
+      paymentId,
+      dto,
+    });
   }
 }

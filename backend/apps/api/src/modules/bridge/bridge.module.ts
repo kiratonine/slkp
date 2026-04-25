@@ -11,6 +11,7 @@ import { BridgeService } from './services/bridge.service';
 import { BridgeSessionVerifierService } from './services/bridge-session-verifier.service';
 import { LedgerService } from './services/ledger.service';
 import { SolanaService } from '../solana/services/solana.service';
+import { BridgeX402PaymentSignerService } from './services/bridge-x402-payment-signer.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SolanaService } from '../solana/services/solana.service';
     BridgeService,
     LedgerService,
     SolanaService,
+    BridgeX402PaymentSignerService,
   ],
   exports: [
     BridgeSessionVerifierService,
@@ -44,6 +46,7 @@ import { SolanaService } from '../solana/services/solana.service';
     BridgePaymentRequiredParserService,
     BridgePaymentValidatorService,
     BridgeService,
+    BridgeX402PaymentSignerService,
   ],
 })
 export class BridgeModule {}

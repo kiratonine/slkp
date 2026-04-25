@@ -1,12 +1,11 @@
-import { S1lkX402BridgeRequestError } from '../errors/s1lk-x402-bridge-request.error';
-import { S1lkX402PaymentRejectedError } from '../errors/s1lk-x402-payment-rejected.error';
-import { S1lkX402SessionTokenMissingError } from '../errors/s1lk-x402-session-token-missing.error';
-import { resolveSessionToken } from '../providers/session-token.provider';
-import { BridgePayResponse } from '../types/bridge-pay-response.type';
-import { CreateS1lkX402ClientOptions } from '../types/create-client-options.type';
-import { extractPaymentRequired } from '../utils/extract-payment-required';
-import { makeIdempotencyKey } from '../utils/make-idempotency-key';
-import { mergeHeaders } from '../utils/merge-headers';
+import { S1lkX402BridgeRequestError } from '../errors/s1lk-x402-bridge-request.error.js';
+import { S1lkX402PaymentRejectedError } from '../errors/s1lk-x402-payment-rejected.error.js';
+import { S1lkX402SessionTokenMissingError } from '../errors/s1lk-x402-session-token-missing.error.js';
+import { BridgePayResponse } from '../types/bridge-pay-response.type.js';
+import { CreateS1lkX402ClientOptions } from '../types/create-client-options.type.js';
+import { extractPaymentRequired } from '../utils/extract-payment-required.js';
+import { makeIdempotencyKey } from '../utils/make-idempotency-key.js';
+import { mergeHeaders } from '../utils/merge-headers.js';
 
 export class S1lkX402Client {
   private readonly bridgeBaseUrl: string;
@@ -47,12 +46,12 @@ export class S1lkX402Client {
     }
 
     const sellerUrl = typeof input === 'string' ? input : input.toString();
+
     this.onLog?.('Received 402 Payment Required', { sellerUrl });
     await this.onPaymentRequired?.(sellerUrl);
 
     const paymentRequiredB64 = await extractPaymentRequired(firstResponse);
-
-    const sessionToken = await resolveSessionToken(this.sessionToken, this.sessionTokenProvider);
+    const sessionToken = await this.resolveSessionToken();
 
     if (sessionToken === null || sessionToken.length === 0) {
       throw new S1lkX402SessionTokenMissingError();
@@ -72,7 +71,9 @@ export class S1lkX402Client {
     });
 
     if (!bridgeResponse.ok) {
-      throw new S1lkX402BridgeRequestError(`Bridge request failed with status ${bridgeResponse.status}`);
+      throw new S1lkX402BridgeRequestError(
+        `Bridge request failed with status ${bridgeResponse.status}`,
+      );
     }
 
     const bridgePayload = (await bridgeResponse.json()) as BridgePayResponse;
@@ -83,15 +84,142 @@ export class S1lkX402Client {
     }
 
     await this.onPaymentApproved?.(bridgePayload.paymentId);
+
     this.onLog?.('Retrying request with PAYMENT-SIGNATURE', {
       paymentId: bridgePayload.paymentId,
     });
 
-    return this.fetchImpl(input, {
+    const retryResponse = await this.fetchImpl(input, {
       ...init,
       headers: mergeHeaders(init?.headers, {
         'PAYMENT-SIGNATURE': bridgePayload.paymentSignatureB64,
       }),
     });
+
+    this.onLog?.('Seller retry response received', {
+      status: retryResponse.status,
+    });
+
+    if (retryResponse.status === 402) {
+      const rejectionDetails = await this.readSeller402Details(retryResponse);
+
+      throw new S1lkX402BridgeRequestError(
+        `Seller rejected PAYMENT-SIGNATURE. ${rejectionDetails}`,
+      );
+    }
+
+    if (!retryResponse.ok) {
+      throw new S1lkX402BridgeRequestError(
+        `Seller retry failed with status ${retryResponse.status}`,
+      );
+    }
+
+    const paymentResponseB64 =
+      retryResponse.headers.get('PAYMENT-RESPONSE') ??
+      retryResponse.headers.get('payment-response') ??
+      retryResponse.headers.get('X-PAYMENT-RESPONSE') ??
+      retryResponse.headers.get('x-payment-response') ??
+      undefined;
+
+    this.onLog?.('Confirming bridge payment after seller success', {
+      paymentId: bridgePayload.paymentId,
+      hasPaymentResponse: paymentResponseB64 !== undefined,
+    });
+
+    await this.confirmBridgePayment({
+      paymentId: bridgePayload.paymentId,
+      sessionToken,
+      paymentResponseB64,
+    });
+
+    this.onLog?.('Bridge payment finalized', {
+      paymentId: bridgePayload.paymentId,
+    });
+
+    return retryResponse;
+  }
+
+  private async resolveSessionToken(): Promise<string | null> {
+    if (this.sessionToken !== null && this.sessionToken.length > 0) {
+      return this.sessionToken;
+    }
+
+    if (this.sessionTokenProvider !== undefined) {
+      return this.sessionTokenProvider();
+    }
+
+    return null;
+  }
+
+  private async readSeller402Details(response: Response): Promise<string> {
+    const paymentRequiredHeader =
+      response.headers.get('PAYMENT-REQUIRED') ??
+      response.headers.get('payment-required');
+
+    if (paymentRequiredHeader !== null && paymentRequiredHeader.length > 0) {
+      const decoded = this.tryDecodeBase64Json(paymentRequiredHeader);
+
+      if (decoded !== null) {
+        this.onLog?.('Seller retry 402 PAYMENT-REQUIRED decoded', decoded);
+
+        return `Seller returned 402 with x402 error: ${JSON.stringify(decoded)}`;
+      }
+
+      return 'Seller returned 402 with PAYMENT-REQUIRED header, but it could not be decoded.';
+    }
+
+    try {
+      const bodyText = await response.clone().text();
+
+      if (bodyText.length > 0) {
+        this.onLog?.('Seller retry 402 body', { bodyText });
+        return `Seller returned 402 body: ${bodyText}`;
+      }
+    } catch {
+      // ignore
+    }
+
+    return 'Seller returned 402 without readable error details.';
+  }
+
+  private tryDecodeBase64Json(value: string): Record<string, unknown> | null {
+    try {
+      const decoded = Buffer.from(value, 'base64').toString('utf-8');
+      const parsed = JSON.parse(decoded) as unknown;
+
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed as Record<string, unknown>;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  private async confirmBridgePayment(params: {
+    paymentId: string;
+    sessionToken: string;
+    paymentResponseB64?: string;
+  }): Promise<void> {
+    const response = await this.fetchImpl(
+      `${this.bridgeBaseUrl}/bridge/payments/${params.paymentId}/confirm`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionToken: params.sessionToken,
+          paymentResponseB64: params.paymentResponseB64,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new S1lkX402BridgeRequestError(
+        `Bridge confirm failed with status ${response.status}`,
+      );
+    }
   }
 }

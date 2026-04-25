@@ -1,4 +1,4 @@
-import { SessionTokenProvider } from '../types/session-token-provider.type';
+import { SessionTokenProvider } from '../types/session-token-provider.type.js';
 
 export async function resolveSessionToken(
   explicitToken: string | null,

@@ -84,7 +84,7 @@ export class BridgePaymentValidatorService {
     }
 
     return {
-      amountAtomic: input.payment.amount,
+      amountAtomic: input.payment.amountAtomic ?? input.payment.amount,
       asset: normalizedAsset,
       network: normalizedNetwork,
       estimatedKztDebit,
