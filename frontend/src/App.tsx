@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AgentSettingsPage from "./pages/AgentSettingsPage";
+import AgentSessionsPage from "./pages/AgentSessionsPage";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -16,6 +17,8 @@ export default function App() {
       </div>
     );
   }
+
+  // НЕ ЗАБЫТЬ ВЕРНУТЬ PROTECTEDROUTES
 
   return (
     <Routes>
@@ -38,6 +41,14 @@ export default function App() {
         }
       />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route
+        path="/agent-sessions"
+        element={
+          <ProtectedRoute>
+            <AgentSessionsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

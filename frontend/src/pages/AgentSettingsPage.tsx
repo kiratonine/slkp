@@ -128,6 +128,7 @@ export default function AgentSettingsPage() {
                 Дневной лимит (₸)
               </label>
               <input
+                placeholder="10000"
                 type="number"
                 min={0}
                 value={draft.dailyLimitKzt === 0 ? "" : draft.dailyLimitKzt}
@@ -147,6 +148,7 @@ export default function AgentSettingsPage() {
                 Лимит на транзакцию (₸)
               </label>
               <input
+                placeholder="10000"
                 type="number"
                 min={0}
                 value={

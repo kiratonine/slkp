@@ -2,9 +2,9 @@ import { ReactNode } from "react";
 
 export default function PhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+    <div className="min-h-screen  flex items-center justify-center p-4">
       <div
-        className="relative bg-white rounded-[3rem] shadow-2xl overflow-hidden"
+        className="relative  bg-white overflow-hidden"
         style={{
           width: 390,
           minHeight: 844,
