@@ -8,6 +8,7 @@ import AgentSettingsPage from "./pages/AgentSettingsPage";
 import AgentSessionsPage from "./pages/AgentSessionsPage";
 import CreateAgentSessionPage from "./pages/CreateAgentSessionPage";
 import AgentSessionCreatedPage from "./pages/AgentSessionCreatedPage";
+import AgentSessionDetailPage from "./pages/AgentSessionDetailPage";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -62,6 +63,14 @@ export default function App() {
             <AgentSessionCreatedPage />
           </ProtectedRoute>
           // protec
+        }
+      />
+      <Route
+        path="/agent-sessions/:id"
+        element={
+          <ProtectedRoute>
+            <AgentSessionDetailPage />
+          </ProtectedRoute>
         }
       />
     </Routes>

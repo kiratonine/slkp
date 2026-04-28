@@ -110,28 +110,34 @@ export default function AgentSessionsPage() {
                 key={session.id}
                 className="bg-white rounded-2xl shadow-sm px-4 py-4"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-gray-900">
-                    {session.name}
+                <button
+                  type="button"
+                  onClick={() => navigate(`/agent-sessions/${session.id}`)}
+                  className="w-full text-left"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-sm font-medium text-gray-900">
+                      {session.name}
+                    </div>
+                    <div
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        session.status === "ACTIVE"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-500"
+                      }`}
+                    >
+                      {session.status === "ACTIVE" ? "Активна" : "Отозвана"}
+                    </div>
                   </div>
-                  <div
-                    className={`text-xs px-2 py-0.5 rounded-full ${
-                      session.status === "ACTIVE"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {session.status === "ACTIVE" ? "Активна" : "Отозвана"}
+                  <div className="text-xs text-gray-400">
+                    Создана:{" "}
+                    {new Date(session.createdAt).toLocaleDateString("ru-RU")}
                   </div>
-                </div>
-                <div className="text-xs text-gray-400">
-                  Создана:{" "}
-                  {new Date(session.createdAt).toLocaleDateString("ru-RU")}
-                </div>
-                <div className="text-xs text-gray-400">
-                  Истекает:{" "}
-                  {new Date(session.expiresAt).toLocaleDateString("ru-RU")}
-                </div>
+                  <div className="text-xs text-gray-400">
+                    Истекает:{" "}
+                    {new Date(session.expiresAt).toLocaleDateString("ru-RU")}
+                  </div>
+                </button>
 
                 {session.status === "ACTIVE" && confirmingId !== session.id && (
                   <button
