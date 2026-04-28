@@ -18,6 +18,7 @@ export default function AgentSettingsPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -49,11 +50,14 @@ export default function AgentSettingsPage() {
     if (!draft) return;
 
     setSaveError(null);
+    setIsSaved(false);
     setIsSaving(true);
 
     try {
       const updated = await agentSettingsService.updateSettings(draft);
       setSettings(updated);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
     } catch (err) {
       if (err instanceof ApiError) {
         setSaveError(err.message);
@@ -199,6 +203,12 @@ export default function AgentSettingsPage() {
                 />
               </button>
             </div>
+
+            {isSaved && (
+              <div className="text-sm text-green-700 bg-green-50 rounded-xl px-4 py-3">
+                Сохранено
+              </div>
+            )}
 
             {saveError && (
               <div className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-3">
