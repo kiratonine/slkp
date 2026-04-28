@@ -12,6 +12,8 @@ export default function AgentSessionsPage() {
   const [sessions, setSessions] = useState<AgentSession[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadSessions = async () => {
@@ -31,6 +33,28 @@ export default function AgentSessionsPage() {
 
     loadSessions();
   }, []);
+
+  const handleRevoke = async (sessionId: string) => {
+    setConfirmingId(null);
+    setRevokingId(sessionId);
+
+    try {
+      const response = await agentSessionsService.revoke(sessionId);
+      setSessions((prev) =>
+        prev
+          ? prev.map((s) => (s.id === sessionId ? response.session : s))
+          : prev,
+      );
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setLoadError(err.message);
+      } else {
+        setLoadError("Не удалось отозвать сессию");
+      }
+    } finally {
+      setRevokingId(null);
+    }
+  };
 
   return (
     <PhoneFrame>
@@ -108,6 +132,41 @@ export default function AgentSessionsPage() {
                   Истекает:{" "}
                   {new Date(session.expiresAt).toLocaleDateString("ru-RU")}
                 </div>
+
+                {session.status === "ACTIVE" && confirmingId !== session.id && (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(session.id)}
+                    disabled={revokingId === session.id}
+                    className="mt-3 w-full bg-red-50 disabled:bg-gray-100 disabled:text-gray-400 text-red-600 rounded-xl py-2 font-medium text-sm transition-colors"
+                  >
+                    {revokingId === session.id ? "Отзываем..." : "Отозвать"}
+                  </button>
+                )}
+
+                {session.status === "ACTIVE" && confirmingId === session.id && (
+                  <div className="mt-3">
+                    <div className="text-xs text-gray-500 text-center mb-2">
+                      Отозвать сессию? Это нельзя отменить.
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingId(null)}
+                        className="flex-1 bg-gray-100 text-gray-700 rounded-xl py-2 font-medium text-sm"
+                      >
+                        Отмена
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRevoke(session.id)}
+                        className="flex-1 bg-red-500 text-white rounded-xl py-2 font-medium text-sm"
+                      >
+                        Подтвердить
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
