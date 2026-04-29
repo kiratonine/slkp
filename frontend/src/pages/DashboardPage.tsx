@@ -112,17 +112,17 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => alert("Функция пополнения скоро будет доступна")}
-            className="bg-white rounded-2xl shadow-sm py-3 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
+            className="bg-white rounded-2xl shadow-sm py-3 px-2 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
           >
-            <Plus size={16} className="text-violet-600" />
-            Пополнить
+            <Plus size={16} className="text-violet-600 shrink-0" />
+            <span className="truncate">Пополнить</span>
           </button>
           <Link
             to="/agent-settings"
-            className="bg-white rounded-2xl shadow-sm py-3 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
+            className="bg-white rounded-2xl shadow-sm py-3 px-2 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
           >
-            <Bot size={16} className="text-violet-600" />
-            Agent Settings
+            <Bot size={16} className="text-violet-600 shrink-0" />
+            <span className="truncate">Agent Settings</span>
           </Link>
         </div>
 

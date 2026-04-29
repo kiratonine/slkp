@@ -32,7 +32,7 @@ export default function BalanceCard() {
 
   return (
     <div
-      className="rounded-3xl p-5 text-white relative overflow-hidden aspect-[1.6/1]"
+      className="rounded-3xl p-5 text-white relative overflow-hidden aspect-[1.6/1] max-h-[240px]"
       style={{
         background:
           "linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%)",
