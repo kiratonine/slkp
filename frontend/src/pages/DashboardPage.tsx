@@ -1,125 +1,85 @@
-import { useNavigate, Link } from "react-router";
-import { useAuth } from "../contexts/AuthContext";
+import { Link } from "react-router";
+import { Bell, ChevronRight, KeyRound, Receipt, Bot } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
-import {
-  Bot,
-  ChevronRight,
-  LogOut,
-  User as UserIcon,
-  KeyRound,
-  History,
-  Receipt,
-} from "lucide-react";
 import BalanceCard from "../components/BalanceCard";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
     <PhoneFrame>
-      <div className="px-5 pt-12 pb-8">
+      <div className="px-5 pt-4 pb-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Главная</h1>
+        <div className="flex items-center justify-between mb-5">
+          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
           <button
-            onClick={handleLogout}
+            type="button"
             className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
           >
-            <LogOut size={18} className="text-gray-600" />
+            <Bell size={18} className="text-gray-600" />
           </button>
         </div>
 
-        {/* User profile block */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 flex items-center gap-3">
-          <div className="w-12 h-12 bg-violet-100 rounded-full flex items-center justify-center">
-            <UserIcon size={20} className="text-violet-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-gray-400 mb-0.5">Аккаунт</div>
-            <div className="text-sm font-medium text-gray-900 truncate">
-              {user?.email}
-            </div>
-          </div>
+        {/* Balance Card */}
+        <div className="mb-4">
+          <BalanceCard />
         </div>
 
-        {/* Placeholder sections */}
-        <div className="space-y-3">
-          <BalanceCard />
-          <Link
-            to="/agent-settings"
-            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
-          >
-            <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-              <Bot size={18} className="text-violet-600" />
+        {/* Agent Payments preview card */}
+        <Link
+          to="/agent-settings"
+          className="bg-white rounded-2xl shadow-sm px-4 py-4 flex items-center gap-3 mb-4 hover:bg-gray-50 transition-colors"
+        >
+          <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center shrink-0">
+            <Bot size={18} className="text-violet-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-gray-900">
+              Agent Payments
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900">
-                Настройки AI-агента
-              </div>
-              <div className="text-xs text-gray-400 mt-0.5">
-                Лимиты и подтверждения
-              </div>
+            <div className="text-xs text-gray-400 mt-0.5">
+              Лимиты и подтверждения
             </div>
-            <ChevronRight size={18} className="text-gray-300" />
-          </Link>
-          <Link
-            to="/agent-sessions"
-            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
-          >
-            <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-              <KeyRound size={18} className="text-violet-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900">
-                Сессии AI-агента
-              </div>
-              <div className="text-xs text-gray-400 mt-0.5">
-                Ключи доступа для агентов
-              </div>
-            </div>
-            <ChevronRight size={18} className="text-gray-300" />
-          </Link>
+          </div>
+          <ChevronRight size={18} className="text-gray-300" />
+        </Link>
 
-          <Link
-            to="/ledger"
-            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
-          >
-            <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-              <History size={18} className="text-violet-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900">
-                История операций
+        {/* Quick Actions */}
+        <div>
+          <div className="text-xs text-gray-400 uppercase tracking-wider mb-2 px-1">
+            Quick Actions
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              to="/agent-sessions/new"
+              className="bg-white rounded-2xl shadow-sm p-4 flex flex-col gap-2 hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
+                <KeyRound size={18} className="text-violet-600" />
               </div>
-              <div className="text-xs text-gray-400 mt-0.5">
-                Все списания и пополнения
+              <div>
+                <div className="text-sm font-medium text-gray-900">
+                  New Session
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5">Создать ключ</div>
               </div>
-            </div>
-            <ChevronRight size={18} className="text-gray-300" />
-          </Link>
-          <Link
-            to="/bridge-payments"
-            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
-          >
-            <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-              <Receipt size={18} className="text-violet-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900">
-                Платежи агента
+            </Link>
+
+            <Link
+              to="/bridge-payments"
+              className="bg-white rounded-2xl shadow-sm p-4 flex flex-col gap-2 hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
+                <Receipt size={18} className="text-violet-600" />
               </div>
-              <div className="text-xs text-gray-400 mt-0.5">
-                История покупок через AI
+              <div>
+                <div className="text-sm font-medium text-gray-900">
+                  Payments
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5">
+                  История покупок
+                </div>
               </div>
-            </div>
-            <ChevronRight size={18} className="text-gray-300" />
-          </Link>
+            </Link>
+          </div>
         </div>
       </div>
     </PhoneFrame>
