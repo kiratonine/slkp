@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import BottomNav from "./BottomNav";
 
 type Props = {
@@ -7,16 +7,25 @@ type Props = {
 };
 
 export default function PhoneFrame({ children, hideNav = false }: Props) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen sm:flex sm:items-center sm:justify-center sm:p-4 sm:bg-gray-100">
-      <div
-        className="relative bg-white overflow-hidden w-full sm:w-[390px] sm:h-[844px] sm:rounded-[2.5rem] sm:shadow-2xl"
-        style={{ minHeight: "100dvh" }}
-      >
+    <div
+      className="sm:flex sm:items-center sm:justify-center sm:p-4 sm:bg-gray-100"
+      style={{ height: "100dvh" }}
+    >
+      <div className="relative bg-white overflow-hidden w-full h-full sm:w-[390px] sm:h-[844px] sm:rounded-[2.5rem] sm:shadow-2xl">
         <div
           className="overflow-y-auto h-full"
           style={{
-            paddingBottom: hideNav ? 0 : 88,
+            paddingBottom: hideNav
+              ? 0
+              : "calc(96px + env(safe-area-inset-bottom))",
           }}
         >
           {children}
