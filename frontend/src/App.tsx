@@ -10,6 +10,8 @@ import CreateAgentSessionPage from "./pages/CreateAgentSessionPage";
 import AgentSessionCreatedPage from "./pages/AgentSessionCreatedPage";
 import AgentSessionDetailPage from "./pages/AgentSessionDetailPage";
 import LedgerPage from "./pages/LedgerPage";
+import BridgePaymentsPage from "./pages/BridgePaymentsPage";
+import BridgePaymentDetailPage from "./pages/BridgePaymentDetailPage";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -79,6 +81,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <LedgerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bridge-payments"
+        element={
+          <ProtectedRoute>
+            <BridgePaymentsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bridge-payments/:id"
+        element={
+          <ProtectedRoute>
+            <BridgePaymentDetailPage />
           </ProtectedRoute>
         }
       />

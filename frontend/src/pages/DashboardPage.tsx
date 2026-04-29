@@ -8,6 +8,7 @@ import {
   User as UserIcon,
   KeyRound,
   History,
+  Receipt,
 } from "lucide-react";
 import BalanceCard from "../components/BalanceCard";
 
@@ -98,6 +99,23 @@ export default function DashboardPage() {
               </div>
               <div className="text-xs text-gray-400 mt-0.5">
                 Все списания и пополнения
+              </div>
+            </div>
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+          <Link
+            to="/bridge-payments"
+            className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+          >
+            <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
+              <Receipt size={18} className="text-violet-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-gray-900">
+                Платежи агента
+              </div>
+              <div className="text-xs text-gray-400 mt-0.5">
+                История покупок через AI
               </div>
             </div>
             <ChevronRight size={18} className="text-gray-300" />
