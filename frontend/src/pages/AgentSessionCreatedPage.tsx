@@ -34,7 +34,7 @@ export default function AgentSessionCreatedPage() {
   };
 
   return (
-    <PhoneFrame>
+    <PhoneFrame hideNav>
       <div className="px-5 pt-4 pb-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">

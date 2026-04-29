@@ -44,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <PhoneFrame>
+    <PhoneFrame hideNav>
       <div className="px-5 pt-12 pb-8">
         <h1 className="text-2xl font-semibold text-gray-900 mb-1">Вход</h1>
         <p className="text-sm text-gray-500 mb-8">Войдите в аккаунт S1lkPay</p>

@@ -52,7 +52,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <PhoneFrame>
+    <PhoneFrame hideNav>
       <div className="px-5 pt-12 pb-8">
         <h1 className="text-2xl font-semibold text-gray-900 mb-1">
           Регистрация

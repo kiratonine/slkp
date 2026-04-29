@@ -1,20 +1,29 @@
 import { ReactNode } from "react";
+import BottomNav from "./BottomNav";
 
-export default function PhoneFrame({ children }: { children: ReactNode }) {
+type Props = {
+  children: ReactNode;
+  hideNav?: boolean;
+};
+
+export default function PhoneFrame({ children, hideNav = false }: Props) {
   return (
-    <div className="min-h-screen  flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div
-        className="relative  bg-white overflow-hidden"
+        className="relative bg-white overflow-hidden"
         style={{
           width: 390,
           minHeight: 844,
           maxHeight: 844,
-          overflowY: "auto",
         }}
       >
-        <div className="h-full overflow-y-auto" style={{ maxHeight: 790 }}>
+        <div
+          className="overflow-y-auto"
+          style={{ maxHeight: hideNav ? 790 : 720 }}
+        >
           {children}
         </div>
+        {!hideNav && <BottomNav />}
       </div>
     </div>
   );
