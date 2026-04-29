@@ -19,7 +19,7 @@ export default function PhoneFrame({ children, hideNav = false }: Props) {
       className="sm:flex sm:items-center sm:justify-center sm:p-4 sm:bg-gray-100"
       style={{ height: "100dvh" }}
     >
-      <div className="relative bg-white overflow-hidden w-full h-full sm:w-[390px] sm:h-[844px] sm:rounded-[2.5rem] sm:shadow-2xl">
+      <div className="relative bg-white overflow-hidden w-full h-full sm:w-[390px] sm:max-h-[844px] sm:rounded-[2.5rem] sm:shadow-2xl">
         <div
           className="overflow-y-auto h-full"
           style={{
