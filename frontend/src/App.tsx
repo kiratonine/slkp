@@ -9,6 +9,7 @@ import AgentSessionsPage from "./pages/AgentSessionsPage";
 import CreateAgentSessionPage from "./pages/CreateAgentSessionPage";
 import AgentSessionCreatedPage from "./pages/AgentSessionCreatedPage";
 import AgentSessionDetailPage from "./pages/AgentSessionDetailPage";
+import LedgerPage from "./pages/LedgerPage";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -70,6 +71,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AgentSessionDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ledger"
+        element={
+          <ProtectedRoute>
+            <LedgerPage />
           </ProtectedRoute>
         }
       />
