@@ -9,6 +9,11 @@ import type {
   BridgePaymentStatus,
 } from "../types/bridge-payments";
 
+function truncateMiddle(value: string, startChars = 6, endChars = 4): string {
+  if (value.length <= startChars + endChars) return value;
+  return `${value.slice(0, startChars)}...${value.slice(-endChars)}`;
+}
+
 const STATUS_HEADER_BG: Record<BridgePaymentStatus, string> = {
   PENDING: "from-amber-400 to-amber-500",
   SUCCEEDED: "from-green-400 to-green-500",
@@ -26,9 +31,10 @@ type FieldRowProps = {
   value: string;
   copyable?: boolean;
   mono?: boolean;
+  truncate?: boolean;
 };
 
-function FieldRow({ label, value, copyable, mono }: FieldRowProps) {
+function FieldRow({ label, value, copyable, mono, truncate }: FieldRowProps) {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -37,16 +43,18 @@ function FieldRow({ label, value, copyable, mono }: FieldRowProps) {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
+  const displayValue = truncate ? truncateMiddle(value) : value;
+
   return (
     <div className="flex items-start justify-between gap-3 px-4 py-3 border-b border-gray-100 last:border-b-0">
       <div className="flex-1 min-w-0">
         <div className="text-xs text-gray-500 mb-0.5">{label}</div>
         <div
-          className={`text-sm text-gray-900 break-all ${
+          className={`text-sm text-gray-900 ${
             mono ? "font-mono text-xs" : ""
-          }`}
+          } ${truncate ? "" : "break-all"}`}
         >
-          {value}
+          {displayValue}
         </div>
       </div>
       {copyable && (
@@ -169,7 +177,13 @@ export default function BridgePaymentDetailPage() {
 
             {/* Details */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
-              <FieldRow label="Payment ID" value={payment.id} mono copyable />
+              <FieldRow
+                label="Payment ID"
+                value={payment.id}
+                mono
+                copyable
+                truncate
+              />
               <FieldRow
                 label="Seller (URL)"
                 value={payment.sellerUrl}
@@ -187,6 +201,7 @@ export default function BridgePaymentDetailPage() {
                   value={payment.payToAddress}
                   mono
                   copyable
+                  truncate
                 />
               )}
               {payment.estimatedKztDebit !== null && (
@@ -207,6 +222,7 @@ export default function BridgePaymentDetailPage() {
                   value={payment.solanaTxSignature}
                   mono
                   copyable
+                  truncate
                 />
               )}
             </div>
