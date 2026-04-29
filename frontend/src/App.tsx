@@ -1,17 +1,18 @@
 import { Routes, Route, Navigate } from "react-router";
 import { useAuth } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import SplashPage from "./pages/SplashPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
-import ProtectedRoute from "./components/ProtectedRoute";
 import AgentSettingsPage from "./pages/AgentSettingsPage";
 import AgentSessionsPage from "./pages/AgentSessionsPage";
 import CreateAgentSessionPage from "./pages/CreateAgentSessionPage";
 import AgentSessionCreatedPage from "./pages/AgentSessionCreatedPage";
 import AgentSessionDetailPage from "./pages/AgentSessionDetailPage";
-import LedgerPage from "./pages/LedgerPage";
 import BridgePaymentsPage from "./pages/BridgePaymentsPage";
 import BridgePaymentDetailPage from "./pages/BridgePaymentDetailPage";
+import LedgerPage from "./pages/LedgerPage";
 import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
@@ -25,19 +26,20 @@ export default function App() {
     );
   }
 
-  // НЕ ЗАБЫТЬ ВЕРНУТЬ PROTECTEDROUTES
-
   return (
     <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<SplashPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      {/* Protected routes */}
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
-          // protec
         }
       />
       <Route
@@ -46,27 +48,30 @@ export default function App() {
           <ProtectedRoute>
             <AgentSettingsPage />
           </ProtectedRoute>
-          // protec
         }
       />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
       <Route
         path="/agent-sessions"
         element={
           <ProtectedRoute>
             <AgentSessionsPage />
           </ProtectedRoute>
-          //  protec
         }
       />
-      <Route path="/agent-sessions/new" element={<CreateAgentSessionPage />} />
+      <Route
+        path="/agent-sessions/new"
+        element={
+          <ProtectedRoute>
+            <CreateAgentSessionPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/agent-sessions/created"
         element={
           <ProtectedRoute>
             <AgentSessionCreatedPage />
           </ProtectedRoute>
-          // protec
         }
       />
       <Route
@@ -74,14 +79,6 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AgentSessionDetailPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/ledger"
-        element={
-          <ProtectedRoute>
-            <LedgerPage />
           </ProtectedRoute>
         }
       />
@@ -102,6 +99,14 @@ export default function App() {
         }
       />
       <Route
+        path="/ledger"
+        element={
+          <ProtectedRoute>
+            <LedgerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/settings"
         element={
           <ProtectedRoute>
@@ -109,6 +114,9 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* Catch-all: redirect unknown URLs to splash */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
