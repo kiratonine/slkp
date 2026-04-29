@@ -1,17 +1,9 @@
 import { NavLink } from "react-router";
-import {
-  Home,
-  Key,
-  Receipt,
-  FileText,
-  Settings as SettingsIcon,
-} from "lucide-react";
+import { Home, Key, Settings as SettingsIcon } from "lucide-react";
 
 const NAV_ITEMS = [
   { to: "/dashboard", icon: Home, label: "Главная" },
   { to: "/agent-sessions", icon: Key, label: "Сессии" },
-  { to: "/bridge-payments", icon: Receipt, label: "Платежи" },
-  { to: "/ledger", icon: FileText, label: "Журнал" },
   { to: "/settings", icon: SettingsIcon, label: "Настройки" },
 ] as const;
 

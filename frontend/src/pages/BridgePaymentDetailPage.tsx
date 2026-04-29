@@ -93,7 +93,7 @@ export default function BridgePaymentDetailPage() {
 
   const handleViewOnExplorer = () => {
     if (!payment?.solanaTxSignature) return;
-    const url = `https://solscan.io/tx/${payment.solanaTxSignature}`;
+    const url = `https://explorer.solana.com/tx/${payment.solanaTxSignature}?cluster=devnet`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -138,11 +138,11 @@ export default function BridgePaymentDetailPage() {
                 <div className="text-xs font-semibold tracking-wider mb-2 opacity-90">
                   {STATUS_LABELS[payment.status]}
                 </div>
-                {payment.estimatedKztDebit !== null && (
+                {payment.amountAtomic && payment.asset && (
                   <div className="text-3xl font-bold mb-2">
-                    {payment.estimatedKztDebit.toLocaleString("ru-RU")}
+                    {(Number(payment.amountAtomic) / 1_000_000).toFixed(2)}
                     <span className="text-lg font-medium ml-1 opacity-80">
-                      ₸
+                      {payment.asset}
                     </span>
                   </div>
                 )}
