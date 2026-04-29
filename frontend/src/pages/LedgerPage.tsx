@@ -154,7 +154,7 @@ export default function LedgerPage() {
                       isDebit ? "text-red-500" : "text-green-600"
                     }`}
                   >
-                    {isDebit ? "-" : "+"}
+                    {!isDebit && "+"}
                     {entry.amountKzt.toLocaleString("ru-RU")} ₸
                   </div>
                 </div>
