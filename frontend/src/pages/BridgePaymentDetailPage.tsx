@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { ArrowLeft, Check, Copy } from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
 import { bridgePaymentsService } from "../services/bridge-payments/bridgePaymentsService";
 import { ApiError } from "../services/api/client";
@@ -9,16 +9,16 @@ import type {
   BridgePaymentStatus,
 } from "../types/bridge-payments";
 
-const STATUS_LABELS: Record<BridgePaymentStatus, string> = {
-  PENDING: "В обработке",
-  SUCCEEDED: "Успешно",
-  FAILED: "Ошибка",
+const STATUS_HEADER_BG: Record<BridgePaymentStatus, string> = {
+  PENDING: "from-amber-400 to-amber-500",
+  SUCCEEDED: "from-green-400 to-green-500",
+  FAILED: "from-red-400 to-red-500",
 };
 
-const STATUS_STYLES: Record<BridgePaymentStatus, string> = {
-  PENDING: "bg-amber-100 text-amber-700",
-  SUCCEEDED: "bg-green-100 text-green-700",
-  FAILED: "bg-red-100 text-red-700",
+const STATUS_LABELS: Record<BridgePaymentStatus, string> = {
+  PENDING: "PENDING",
+  SUCCEEDED: "SUCCEEDED",
+  FAILED: "FAILED",
 };
 
 type FieldRowProps = {
@@ -38,7 +38,7 @@ function FieldRow({ label, value, copyable, mono }: FieldRowProps) {
   };
 
   return (
-    <div className="flex items-start justify-between gap-3 py-2">
+    <div className="flex items-start justify-between gap-3 px-4 py-3 border-b border-gray-100 last:border-b-0">
       <div className="flex-1 min-w-0">
         <div className="text-xs text-gray-500 mb-0.5">{label}</div>
         <div
@@ -91,18 +91,27 @@ export default function BridgePaymentDetailPage() {
     loadPayment();
   }, [id]);
 
+  const handleViewOnExplorer = () => {
+    if (!payment?.solanaTxSignature) return;
+    const url = `https://solscan.io/tx/${payment.solanaTxSignature}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <PhoneFrame>
       <div className="px-5 pt-4 pb-8">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-5">
           <button
+            type="button"
             onClick={() => navigate("/bridge-payments")}
             className="text-gray-500"
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">Платёж</h1>
+          <h1 className="text-lg font-semibold text-gray-900">
+            Payment Detail
+          </h1>
         </div>
 
         {isLoading && (
@@ -118,37 +127,39 @@ export default function BridgePaymentDetailPage() {
         )}
 
         {payment && !isLoading && !loadError && (
-          <div className="flex flex-col gap-3">
-            {/* Header card: status + amount */}
-            <div className="bg-white rounded-2xl shadow-sm px-4 py-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate mr-2">
-                  {payment.purpose || "Без описания"}
+          <>
+            {/* Status header card */}
+            <div
+              className={`rounded-3xl p-5 mb-4 text-white relative overflow-hidden bg-gradient-to-br ${STATUS_HEADER_BG[payment.status]}`}
+            >
+              <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full translate-x-10 -translate-y-10" />
+
+              <div className="relative z-10 text-center">
+                <div className="text-xs font-semibold tracking-wider mb-2 opacity-90">
+                  {STATUS_LABELS[payment.status]}
                 </div>
-                <div
-                  className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
-                    payment.decision === "REJECTED"
-                      ? "bg-red-100 text-red-700"
-                      : STATUS_STYLES[payment.status]
-                  }`}
-                >
-                  {payment.decision === "REJECTED"
-                    ? "Отклонён"
-                    : STATUS_LABELS[payment.status]}
+                {payment.estimatedKztDebit !== null && (
+                  <div className="text-3xl font-bold mb-2">
+                    {payment.estimatedKztDebit.toLocaleString("ru-RU")}
+                    <span className="text-lg font-medium ml-1 opacity-80">
+                      ₸
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center justify-center gap-1.5 text-xs opacity-90">
+                  <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-[10px] font-bold">
+                    $
+                  </div>
+                  {payment.asset || "USDC"} on {payment.network || "Solana"}
                 </div>
               </div>
-              {payment.estimatedKztDebit !== null && (
-                <div className="text-2xl font-semibold text-gray-900">
-                  {payment.estimatedKztDebit.toLocaleString("ru-RU")} ₸
-                </div>
-              )}
             </div>
 
-            {/* Rejection reason (only if rejected) */}
+            {/* Rejection reason */}
             {payment.decision === "REJECTED" && payment.rejectionReason && (
-              <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
+              <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 mb-4">
                 <div className="text-xs text-red-700 mb-1 font-medium">
-                  Причина отказа
+                  Rejection Reason
                 </div>
                 <div className="text-sm text-red-800">
                   {payment.rejectionReason}
@@ -156,65 +167,62 @@ export default function BridgePaymentDetailPage() {
               </div>
             )}
 
-            {/* Payment details */}
-            <div className="bg-white rounded-2xl shadow-sm px-4 py-2">
-              <FieldRow label="Продавец" value={payment.sellerUrl} copyable />
+            {/* Details */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+              <FieldRow label="Payment ID" value={payment.id} mono copyable />
+              <FieldRow
+                label="Seller (URL)"
+                value={payment.sellerUrl}
+                copyable
+              />
               {payment.asset && (
-                <FieldRow label="Актив" value={payment.asset} />
+                <FieldRow label="Asset" value={payment.asset} />
               )}
               {payment.network && (
-                <FieldRow label="Сеть" value={payment.network} />
+                <FieldRow label="Network" value={payment.network} />
               )}
-              {payment.amountAtomic && (
+              {payment.payToAddress && (
                 <FieldRow
-                  label="Сумма (atomic)"
-                  value={payment.amountAtomic}
+                  label="Pay To Address"
+                  value={payment.payToAddress}
                   mono
+                  copyable
                 />
               )}
-            </div>
-
-            {/* Blockchain details */}
-            {(payment.solanaTxSignature || payment.payToAddress) && (
-              <div className="bg-white rounded-2xl shadow-sm px-4 py-2">
-                {payment.solanaTxSignature && (
-                  <FieldRow
-                    label="Tx Signature"
-                    value={payment.solanaTxSignature}
-                    copyable
-                    mono
-                  />
-                )}
-                {payment.payToAddress && (
-                  <FieldRow
-                    label="Адрес получателя"
-                    value={payment.payToAddress}
-                    copyable
-                    mono
-                  />
-                )}
-              </div>
-            )}
-
-            {/* Timing */}
-            <div className="bg-white rounded-2xl shadow-sm px-4 py-2">
-              <FieldRow
-                label="Создан"
-                value={new Date(payment.createdAt).toLocaleString("ru-RU")}
-              />
+              {payment.estimatedKztDebit !== null && (
+                <FieldRow
+                  label="Estimated KZT Debit"
+                  value={`${payment.estimatedKztDebit.toLocaleString("ru-RU")} ₸`}
+                />
+              )}
               {payment.executedAt && (
                 <FieldRow
-                  label="Выполнен"
+                  label="Executed At"
                   value={new Date(payment.executedAt).toLocaleString("ru-RU")}
                 />
               )}
+              {payment.solanaTxSignature && (
+                <FieldRow
+                  label="Tx Signature"
+                  value={payment.solanaTxSignature}
+                  mono
+                  copyable
+                />
+              )}
             </div>
 
-            {/* ID */}
-            <div className="bg-white rounded-2xl shadow-sm px-4 py-2">
-              <FieldRow label="ID платежа" value={payment.id} copyable mono />
-            </div>
-          </div>
+            {/* View on Explorer (only if has tx signature) */}
+            {payment.solanaTxSignature && (
+              <button
+                type="button"
+                onClick={handleViewOnExplorer}
+                className="w-full bg-white border border-violet-200 text-violet-600 rounded-2xl py-3.5 font-semibold text-sm hover:bg-violet-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <ExternalLink size={16} />
+                View on Explorer
+              </button>
+            )}
+          </>
         )}
       </div>
     </PhoneFrame>
