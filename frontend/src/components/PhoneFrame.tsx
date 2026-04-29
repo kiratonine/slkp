@@ -8,18 +8,16 @@ type Props = {
 
 export default function PhoneFrame({ children, hideNav = false }: Props) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen sm:flex sm:items-center sm:justify-center sm:p-4 sm:bg-gray-100">
       <div
-        className="relative bg-white overflow-hidden"
-        style={{
-          width: 390,
-          minHeight: 844,
-          maxHeight: 844,
-        }}
+        className="relative bg-white overflow-hidden w-full sm:w-[390px] sm:h-[844px] sm:rounded-[2.5rem] sm:shadow-2xl"
+        style={{ minHeight: "100dvh" }}
       >
         <div
-          className="overflow-y-auto"
-          style={{ maxHeight: hideNav ? 790 : 720 }}
+          className="overflow-y-auto h-full"
+          style={{
+            paddingBottom: hideNav ? 0 : 88,
+          }}
         >
           {children}
         </div>
