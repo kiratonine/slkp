@@ -20,19 +20,6 @@ export default function SplashPage() {
     <PhoneFrame hideNav>
       <div className="px-5 pt-8 pb-8 min-h-full flex flex-col">
         {/* Logo */}
-        <div className="flex items-center gap-2 mb-12">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
-          </div>
-          <div>
-            <div className="text-base font-bold text-gray-900 leading-none">
-              S1LK
-            </div>
-            <div className="text-[10px] text-gray-500 leading-none mt-0.5">
-              x402 Bridge
-            </div>
-          </div>
-        </div>
 
         {/* Hero text */}
         <h1 className="text-[2.5rem] font-bold text-gray-900 leading-tight mb-3">
