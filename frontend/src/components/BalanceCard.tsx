@@ -76,8 +76,8 @@ export default function BalanceCard() {
         <div className="flex gap-2">
           <button
             type="button"
-            disabled
-            className="flex-1 bg-white/20 hover:bg-white/30 disabled:opacity-50 backdrop-blur-sm rounded-xl py-2.5 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors"
+            onClick={() => alert("Функция пополнения скоро будет доступна")}
+            className="flex-1 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl py-2.5 text-sm font-medium flex items-center justify-center gap-1.5 transition-colors"
           >
             <Plus size={16} />
             Пополнить
