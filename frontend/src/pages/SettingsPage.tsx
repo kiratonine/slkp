@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
 import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 
 const APP_VERSION = "1.0.0";
 
@@ -97,7 +98,9 @@ export default function SettingsPage() {
 
           <button
             type="button"
-            onClick={() => alert("Функция скоро будет доступна")}
+            onClick={() =>
+              toast("Функция скоро будет доступна", { icon: "🚧" })
+            }
             className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left"
           >
             <div className="w-9 h-9 bg-violet-100 rounded-full flex items-center justify-center shrink-0">

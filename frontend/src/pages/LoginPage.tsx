@@ -4,6 +4,7 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { ApiError } from "../services/api/client";
 import PhoneFrame from "../components/PhoneFrame";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -44,11 +45,11 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = () => {
-    alert("Вход через Google скоро будет доступен");
+    toast("Вход через Google скоро будет доступен", { icon: "🚧" });
   };
 
   const handleForgotPassword = () => {
-    alert("Восстановление пароля скоро будет доступно");
+    toast("Восстановление пароля скоро будет доступно", { icon: "🚧" });
   };
 
   return (

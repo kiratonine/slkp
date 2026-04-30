@@ -4,6 +4,7 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { ApiError } from "../services/api/client";
 import PhoneFrame from "../components/PhoneFrame";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
   const { register, isAuthenticated } = useAuth();
@@ -58,7 +59,7 @@ export default function RegisterPage() {
   };
 
   const handleTermsClick = () => {
-    alert("Страница условий скоро будет доступна");
+    toast("Страница условий скоро будет доступна", { icon: "🚧" });
   };
 
   return (

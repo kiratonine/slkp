@@ -8,6 +8,7 @@ import {
 } from "../services/agent-settings/agentSettingsService";
 import { ApiError } from "../services/api/client";
 import type { AgentSettings } from "../types/auth";
+import toast from "react-hot-toast";
 
 export default function AgentSettingsPage() {
   const navigate = useNavigate();
@@ -49,20 +50,17 @@ export default function AgentSettingsPage() {
     e.preventDefault();
     if (!draft) return;
 
-    setSaveError(null);
-    setIsSaved(false);
     setIsSaving(true);
 
     try {
       const updated = await agentSettingsService.updateSettings(draft);
       setSettings(updated);
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
+      toast.success("Настройки сохранены");
     } catch (err) {
       if (err instanceof ApiError) {
-        setSaveError(err.message);
+        toast.error(err.message);
       } else {
-        setSaveError("Не удалось сохранить");
+        toast.error("Не удалось сохранить");
       }
     } finally {
       setIsSaving(false);
@@ -203,18 +201,6 @@ export default function AgentSettingsPage() {
                 />
               </button>
             </div>
-
-            {isSaved && (
-              <div className="text-sm text-green-700 bg-green-50 rounded-xl px-4 py-3">
-                Сохранено
-              </div>
-            )}
-
-            {saveError && (
-              <div className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-3">
-                {saveError}
-              </div>
-            )}
 
             <button
               type="submit"
