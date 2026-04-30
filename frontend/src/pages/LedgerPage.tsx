@@ -1,34 +1,72 @@
 import { useEffect, useState } from "react";
-import {
-  Filter,
-  ArrowDownLeft,
-  ArrowUpRight,
-  CreditCard,
-  ShoppingBag,
-} from "lucide-react";
+import { useNavigate } from "react-router";
+import { Filter, ShoppingBag } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
-import { ledgerService } from "../services/ledger/ledgerService";
+import { bridgePaymentsService } from "../services/bridge-payments/bridgePaymentsService";
 import { balanceService } from "../services/balance/balanceService";
 import { ApiError } from "../services/api/client";
-import type { LedgerEntry } from "../types/ledger";
+import type {
+  BridgePayment,
+  BridgePaymentStatus,
+} from "../types/bridge-payments";
 import type { Balance } from "../types/auth";
-import { useNavigate } from "react-router";
 
-function getEntryIcon(type: string) {
-  if (type === "DEBIT") return ShoppingBag;
-  if (type === "CREDIT") return CreditCard;
-  return ArrowDownLeft;
+const STATUS_BADGE_STYLES: Record<BridgePaymentStatus, string> = {
+  PENDING: "bg-amber-100 text-amber-700",
+  SUCCEEDED: "bg-green-100 text-green-700",
+  FAILED: "bg-red-100 text-red-700",
+};
+
+const STATUS_BADGE_LABELS: Record<BridgePaymentStatus, string> = {
+  PENDING: "В обработке",
+  SUCCEEDED: "Успешно",
+  FAILED: "Ошибка",
+};
+
+function getPaymentLabel(payment: BridgePayment): string {
+  if (payment.purpose) return payment.purpose;
+  return "Оплата AI агентом";
 }
 
-function getEntryLabel(type: string) {
-  if (type === "DEBIT") return "Списание";
-  if (type === "CREDIT") return "Пополнение";
-  return type;
+function formatDateGroup(dateString: string): string {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const isSameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+  if (isSameDay(date, today)) return "Сегодня";
+  if (isSameDay(date, yesterday)) return "Вчера";
+
+  return date.toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "long",
+  });
+}
+
+function groupByDate(payments: BridgePayment[]): Map<string, BridgePayment[]> {
+  const groups = new Map<string, BridgePayment[]>();
+
+  for (const payment of payments) {
+    const groupKey = formatDateGroup(payment.createdAt);
+    const existing = groups.get(groupKey);
+    if (existing) {
+      existing.push(payment);
+    } else {
+      groups.set(groupKey, [payment]);
+    }
+  }
+
+  return groups;
 }
 
 export default function LedgerPage() {
   const navigate = useNavigate();
-  const [entries, setEntries] = useState<LedgerEntry[] | null>(null);
+  const [payments, setPayments] = useState<BridgePayment[] | null>(null);
   const [balance, setBalance] = useState<Balance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -36,11 +74,11 @@ export default function LedgerPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [ledgerData, balanceData] = await Promise.all([
-          ledgerService.list(),
+        const [paymentsData, balanceData] = await Promise.all([
+          bridgePaymentsService.list(),
           balanceService.getBalance(),
         ]);
-        setEntries(ledgerData.entries);
+        setPayments(paymentsData.payments);
         setBalance(balanceData);
       } catch (err) {
         if (err instanceof ApiError) {
@@ -55,6 +93,8 @@ export default function LedgerPage() {
 
     loadData();
   }, []);
+
+  const groupedPayments = payments ? groupByDate(payments) : null;
 
   return (
     <PhoneFrame>
@@ -100,7 +140,7 @@ export default function LedgerPage() {
         </div>
 
         {/* Loading */}
-        {isLoading && !entries && (
+        {isLoading && !payments && (
           <div className="text-sm text-gray-400 text-center py-8">
             Загрузка...
           </div>
@@ -114,58 +154,100 @@ export default function LedgerPage() {
         )}
 
         {/* Empty state */}
-        {entries && entries.length === 0 && !isLoading && (
+        {payments && payments.length === 0 && !isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
             Операций пока нет
           </div>
         )}
 
-        {/* Entries list */}
-        {entries && entries.length > 0 && (
-          <div className="flex flex-col gap-2">
-            {entries.map((entry) => {
-              const isDebit = entry.type === "DEBIT";
-              const Icon = getEntryIcon(entry.type);
+        {/* Payments list grouped by date */}
+        {groupedPayments && payments && payments.length > 0 && (
+          <div className="flex flex-col gap-3">
+            {Array.from(groupedPayments.entries()).map(([dateLabel, items]) => (
+              <div key={dateLabel}>
+                <div className="text-xs text-gray-400 uppercase tracking-wider mb-2 px-1">
+                  {dateLabel}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {items.map((payment) => {
+                    const isFailed =
+                      payment.status === "FAILED" ||
+                      payment.decision === "REJECTED";
+                    const isPending = payment.status === "PENDING";
+                    const isSuccess = payment.status === "SUCCEEDED";
 
-              return (
-                <button
-                  key={entry.id}
-                  type="button"
-                  onClick={() =>
-                    navigate(`/bridge-payments/${entry.paymentId}`)
-                  }
-                  className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-50 transition-colors w-full"
-                >
-                  <div
-                    className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-                      isDebit ? "bg-red-50" : "bg-green-50"
-                    }`}
-                  >
-                    {isDebit ? (
-                      <Icon size={18} className="text-red-500" />
-                    ) : (
-                      <Icon size={18} className="text-green-600" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900 truncate">
-                      {getEntryLabel(entry.type)}
-                    </div>
-                    <div className="text-xs text-gray-400 truncate">
-                      {new Date(entry.createdAt).toLocaleString("ru-RU")}
-                    </div>
-                  </div>
-                  <div
-                    className={`text-sm font-bold shrink-0 ${
-                      isDebit ? "text-red-500" : "text-green-600"
-                    }`}
-                  >
-                    {!isDebit && "+"}
-                    {entry.amountKzt.toLocaleString("ru-RU")} ₸
-                  </div>
-                </button>
-              );
-            })}
+                    return (
+                      <button
+                        key={payment.id}
+                        type="button"
+                        onClick={() =>
+                          navigate(`/bridge-payments/${payment.id}`)
+                        }
+                        className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-50 transition-colors w-full"
+                      >
+                        <div
+                          className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
+                            isFailed
+                              ? "bg-red-50"
+                              : isPending
+                                ? "bg-amber-50"
+                                : "bg-violet-50"
+                          }`}
+                        >
+                          <ShoppingBag
+                            size={18}
+                            className={
+                              isFailed
+                                ? "text-red-500"
+                                : isPending
+                                  ? "text-amber-600"
+                                  : "text-violet-600"
+                            }
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-900 truncate mb-0.5">
+                            {getPaymentLabel(payment)}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="text-xs text-gray-400">
+                              {new Date(payment.createdAt).toLocaleTimeString(
+                                "ru-RU",
+                                { hour: "2-digit", minute: "2-digit" },
+                              )}
+                            </div>
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                                payment.decision === "REJECTED"
+                                  ? "bg-red-100 text-red-700"
+                                  : STATUS_BADGE_STYLES[payment.status]
+                              }`}
+                            >
+                              {payment.decision === "REJECTED"
+                                ? "Отклонён"
+                                : STATUS_BADGE_LABELS[payment.status]}
+                            </span>
+                          </div>
+                        </div>
+                        {payment.estimatedKztDebit !== null && (
+                          <div
+                            className={`text-sm font-bold shrink-0 ${
+                              isSuccess ? "text-red-500" : "text-gray-400"
+                            }`}
+                          >
+                            {isSuccess && "-"}
+                            {payment.estimatedKztDebit.toLocaleString(
+                              "ru-RU",
+                            )}{" "}
+                            ₸
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
