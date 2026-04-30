@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
+import { useBackNavigation } from "../hooks/useBackNavigation";
 import { ArrowLeft, Check, Copy, ExternalLink } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
 import { bridgePaymentsService } from "../services/bridge-payments/bridgePaymentsService";
@@ -71,7 +72,7 @@ function FieldRow({ label, value, copyable, mono, truncate }: FieldRowProps) {
 }
 
 export default function BridgePaymentDetailPage() {
-  const navigate = useNavigate();
+  const goBack = useBackNavigation("/dashboard");
   const { id } = useParams<{ id: string }>();
 
   const [payment, setPayment] = useState<BridgePayment | null>(null);
@@ -110,11 +111,7 @@ export default function BridgePaymentDetailPage() {
       <div className="px-5 pt-4 pb-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <button
-            type="button"
-            onClick={() => navigate("/bridge-payments")}
-            className="text-gray-500"
-          >
+          <button type="button" onClick={goBack} className="text-gray-500">
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-semibold text-gray-900">

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 import { ArrowLeft, Copy, Check, AlertTriangle } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
 import type { AgentSession } from "../types/agent-sessions";
+import { useBackNavigation } from "../hooks/useBackNavigation";
 
 type LocationState = {
   session: AgentSession;
@@ -12,6 +13,7 @@ type LocationState = {
 export default function AgentSessionCreatedPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const goBack = useBackNavigation("/agent-sessions");
 
   const state = location.state as LocationState | null;
 
@@ -38,10 +40,7 @@ export default function AgentSessionCreatedPage() {
       <div className="px-5 pt-4 pb-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={() => navigate("/agent-sessions")}
-            className="text-gray-500"
-          >
+          <button onClick={goBack} className="text-gray-500">
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-semibold text-gray-900">

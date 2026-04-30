@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import PhoneFrame from "../components/PhoneFrame";
 import { agentSessionsService } from "../services/agent-sessions/agentSessionsService";
 import { ApiError } from "../services/api/client";
 import type { AgentSession } from "../types/agent-sessions";
 import RevokeSessionModal from "../components/RevokeSessionModal";
+import { useBackNavigation } from "../hooks/useBackNavigation";
 
 type DisplayStatus = "active" | "revoked" | "expired";
 
@@ -28,7 +29,7 @@ function getDisplayStatus(session: AgentSession): DisplayStatus {
 }
 
 export default function AgentSessionDetailPage() {
-  const navigate = useNavigate();
+  const goBack = useBackNavigation("/agent-sessions");
   const { id } = useParams<{ id: string }>();
 
   const [session, setSession] = useState<AgentSession | null>(null);
@@ -91,11 +92,7 @@ export default function AgentSessionDetailPage() {
       <div className="px-5 pt-4 pb-8 flex flex-col" style={{ minHeight: 720 }}>
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <button
-            type="button"
-            onClick={() => navigate("/agent-sessions")}
-            className="text-gray-500"
-          >
+          <button type="button" onClick={goBack} className="text-gray-500">
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-semibold text-gray-900 flex-1 truncate">
