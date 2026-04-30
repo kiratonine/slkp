@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   Bell,
   Bot,
@@ -66,6 +66,7 @@ function groupByDate(entries: LedgerEntry[]): Map<string, LedgerEntry[]> {
 }
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [entries, setEntries] = useState<LedgerEntry[] | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
@@ -163,9 +164,13 @@ export default function DashboardPage() {
                     const Icon = getEntryIcon(entry.type);
 
                     return (
-                      <div
+                      <button
                         key={entry.id}
-                        className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3"
+                        type="button"
+                        onClick={() =>
+                          navigate(`/bridge-payments/${entry.paymentId}`)
+                        }
+                        className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-50 transition-colors w-full"
                       >
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
@@ -198,7 +203,7 @@ export default function DashboardPage() {
                           {!isDebit && "+"}
                           {entry.amountKzt.toLocaleString("ru-RU")} ₸
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
