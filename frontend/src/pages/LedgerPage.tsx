@@ -12,6 +12,7 @@ import { balanceService } from "../services/balance/balanceService";
 import { ApiError } from "../services/api/client";
 import type { LedgerEntry } from "../types/ledger";
 import type { Balance } from "../types/auth";
+import { useNavigate } from "react-router";
 
 function getEntryIcon(type: string) {
   if (type === "DEBIT") return ShoppingBag;
@@ -26,6 +27,7 @@ function getEntryLabel(type: string) {
 }
 
 export default function LedgerPage() {
+  const navigate = useNavigate();
   const [entries, setEntries] = useState<LedgerEntry[] | null>(null);
   const [balance, setBalance] = useState<Balance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -126,9 +128,13 @@ export default function LedgerPage() {
               const Icon = getEntryIcon(entry.type);
 
               return (
-                <div
+                <button
                   key={entry.id}
-                  className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3"
+                  type="button"
+                  onClick={() =>
+                    navigate(`/bridge-payments/${entry.paymentId}`)
+                  }
+                  className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-50 transition-colors w-full"
                 >
                   <div
                     className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
@@ -157,7 +163,7 @@ export default function LedgerPage() {
                     {!isDebit && "+"}
                     {entry.amountKzt.toLocaleString("ru-RU")} ₸
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
