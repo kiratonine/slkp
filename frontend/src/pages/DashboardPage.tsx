@@ -14,6 +14,7 @@ import BalanceCard from "../components/BalanceCard";
 import { ledgerService } from "../services/ledger/ledgerService";
 import { ApiError } from "../services/api/client";
 import type { LedgerEntry } from "../types/ledger";
+import toast from "react-hot-toast";
 
 const HISTORY_LIMIT = 6;
 
@@ -112,7 +113,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button
             type="button"
-            onClick={() => alert("Функция пополнения скоро будет доступна")}
+            onClick={() =>
+              toast("Функция пополнения скоро будет доступна", { icon: "🚧" })
+            }
             className="bg-white rounded-2xl shadow-sm py-3 px-2 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
           >
             <Plus size={16} className="text-violet-600 shrink-0" />
