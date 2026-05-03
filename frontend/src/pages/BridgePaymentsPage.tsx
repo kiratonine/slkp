@@ -149,13 +149,13 @@ export default function BridgePaymentsPage() {
                     <div className="flex items-center justify-between gap-2">
                       <div className="text-xs text-gray-400">
                         {new Date(payment.createdAt).toLocaleDateString(
-                          "ru-RU",
+                          "en-US",
                         )}{" "}
                         · {payment.network || "—"}
                       </div>
                       {payment.estimatedKztDebit !== null && (
                         <div className="text-sm font-bold text-gray-900 shrink-0">
-                          {payment.estimatedKztDebit.toLocaleString("ru-RU")} ₸
+                          {payment.estimatedKztDebit.toLocaleString("en-US")} ₸
                         </div>
                       )}
                     </div>
