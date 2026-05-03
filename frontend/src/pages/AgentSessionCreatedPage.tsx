@@ -44,7 +44,7 @@ export default function AgentSessionCreatedPage() {
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-semibold text-gray-900">
-            Сессия создана
+            Session Created
           </h1>
         </div>
 
@@ -52,17 +52,17 @@ export default function AgentSessionCreatedPage() {
         <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-4 mb-4 flex gap-3">
           <AlertTriangle size={20} className="text-amber-600 shrink-0 mt-0.5" />
           <div className="text-sm text-amber-800">
-            <div className="font-semibold mb-1">Сохраните токен сейчас</div>
+            <div className="font-semibold mb-1">Save the token now</div>
             <div className="text-xs">
-              Это единственный раз когда вы видите этот токен. Потом он будет
-              недоступен.
+              This is the only time you'll see this token. It won't be available
+              again.
             </div>
           </div>
         </div>
 
         {/* Session info */}
         <div className="bg-white rounded-2xl shadow-sm px-4 py-4 mb-4">
-          <div className="text-xs text-gray-500 mb-1">Имя сессии</div>
+          <div className="text-xs text-gray-500 mb-1">Session Name</div>
           <div className="text-sm font-medium text-gray-900">
             {state.session.name}
           </div>
@@ -70,7 +70,7 @@ export default function AgentSessionCreatedPage() {
 
         {/* Token */}
         <div className="bg-white rounded-2xl shadow-sm px-4 py-4 mb-4">
-          <div className="text-xs text-gray-500 mb-2">Токен сессии</div>
+          <div className="text-xs text-gray-500 mb-2">Session Token</div>
           <div className="text-xs font-mono text-gray-900 break-all bg-gray-50 rounded-xl px-3 py-3 select-all">
             {state.sessionToken}
           </div>
@@ -82,12 +82,12 @@ export default function AgentSessionCreatedPage() {
             {isCopied ? (
               <>
                 <Check size={16} />
-                Скопировано
+                Copied
               </>
             ) : (
               <>
                 <Copy size={16} />
-                Скопировать
+                Copy
               </>
             )}
           </button>
@@ -99,7 +99,7 @@ export default function AgentSessionCreatedPage() {
           onClick={() => navigate("/agent-sessions")}
           className="w-full bg-violet-600 text-white rounded-2xl py-4 font-semibold text-sm hover:bg-violet-700 transition-colors"
         >
-          Готово
+          Done
         </button>
       </div>
     </PhoneFrame>

@@ -49,7 +49,7 @@ export default function AgentSessionDetailPage() {
         if (err instanceof ApiError) {
           setLoadError(err.message);
         } else {
-          setLoadError("Не удалось загрузить сессию");
+          setLoadError("Failed to load session");
         }
       } finally {
         setIsLoading(false);
@@ -72,7 +72,7 @@ export default function AgentSessionDetailPage() {
       if (err instanceof ApiError) {
         setLoadError(err.message);
       } else {
-        setLoadError("Не удалось отозвать сессию");
+        setLoadError("Failed to revoke session");
       }
     } finally {
       setIsRevoking(false);
@@ -96,7 +96,7 @@ export default function AgentSessionDetailPage() {
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-semibold text-gray-900 flex-1 truncate">
-            {session?.name || "Сессия"}
+            {session?.name || "Session"}
           </h1>
           {status && (
             <div
@@ -109,7 +109,7 @@ export default function AgentSessionDetailPage() {
 
         {isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Загрузка...
+            Loading...
           </div>
         )}
 
@@ -134,7 +134,7 @@ export default function AgentSessionDetailPage() {
                 <div>
                   <div className="text-xs text-gray-500 mb-0.5">Created At</div>
                   <div className="text-sm text-gray-900">
-                    {new Date(session.createdAt).toLocaleString("ru-RU")}
+                    {new Date(session.createdAt).toLocaleString("en-US")}
                   </div>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export default function AgentSessionDetailPage() {
                 <div className="min-w-0">
                   <div className="text-xs text-gray-500 mb-0.5">Expires At</div>
                   <div className="text-sm text-gray-900">
-                    {new Date(session.expiresAt).toLocaleString("ru-RU")}
+                    {new Date(session.expiresAt).toLocaleString("en-US")}
                   </div>
                 </div>
                 {status === "active" && (
@@ -157,7 +157,7 @@ export default function AgentSessionDetailPage() {
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="text-xs text-gray-500 mb-0.5">Revoked At</div>
                   <div className="text-sm text-gray-900">
-                    {new Date(session.revokedAt).toLocaleString("ru-RU")}
+                    {new Date(session.revokedAt).toLocaleString("en-US")}
                   </div>
                 </div>
               )}

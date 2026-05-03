@@ -32,12 +32,12 @@ export default function LoginPage() {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.errorCode === "AUTH_INVALID_CREDENTIALS") {
-          setError("Неверный email или пароль");
+          setError("Invalid email or password");
         } else {
           setError(err.message);
         }
       } else {
-        setError("Не удалось войти. Попробуйте позже.");
+        setError("Failed to log in. Please try again later.");
       }
     } finally {
       setIsSubmitting(false);
@@ -45,11 +45,11 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = () => {
-    toast("Вход через Google скоро будет доступен", { icon: "🚧" });
+    toast("Google sign-in coming soon", { icon: "🚧" });
   };
 
   const handleForgotPassword = () => {
-    toast("Восстановление пароля скоро будет доступно", { icon: "🚧" });
+    toast("Password recovery coming soon", { icon: "🚧" });
   };
 
   return (
@@ -92,7 +92,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 pr-11 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-violet-400 focus:bg-white transition-colors"
                 placeholder="••••••••"
               />
@@ -124,7 +124,7 @@ export default function LoginPage() {
             disabled={isSubmitting}
             className="w-full bg-violet-600 disabled:bg-gray-300 text-white rounded-2xl py-3.5 font-semibold text-sm hover:bg-violet-700 transition-colors mt-2"
           >
-            {isSubmitting ? "Входим..." : "Log In"}
+            {isSubmitting ? "Logging in..." : "Log In"}
           </button>
         </form>
 

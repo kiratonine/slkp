@@ -49,7 +49,7 @@ export default function AgentSessionsPage() {
         if (err instanceof ApiError) {
           setLoadError(err.message);
         } else {
-          setLoadError("Не удалось загрузить сессии");
+          setLoadError("Failed to load sessions");
         }
       } finally {
         setIsLoading(false);
@@ -102,7 +102,7 @@ export default function AgentSessionsPage() {
         {/* Loading */}
         {isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Загрузка...
+            Loading...
           </div>
         )}
 
@@ -116,7 +116,7 @@ export default function AgentSessionsPage() {
         {/* Empty state */}
         {filteredSessions && filteredSessions.length === 0 && !isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Нет сессий в этой категории
+            No sessions in this category
           </div>
         )}
 
@@ -158,12 +158,12 @@ export default function AgentSessionsPage() {
                     <div className="flex items-center justify-between mt-1.5">
                       <div className="text-xs text-gray-400">
                         {status === "expired"
-                          ? `Истекла ${expiresDate.toLocaleDateString("ru-RU")}`
-                          : `Истекает ${expiresDate.toLocaleDateString("ru-RU")}`}
+                          ? `Expired on ${expiresDate.toLocaleDateString("en-US")}`
+                          : `Expires ${expiresDate.toLocaleDateString("en-US")}`}
                       </div>
                       {status === "active" && (
                         <div className="text-xs text-gray-500 font-medium">
-                          {daysLeft} дн. осталось
+                          {daysLeft} days left
                         </div>
                       )}
                     </div>

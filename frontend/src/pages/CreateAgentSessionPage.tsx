@@ -25,7 +25,7 @@ export default function CreateAgentSessionPage() {
     e.preventDefault();
 
     if (expiresInDays === "") {
-      setCreateError("Укажите срок действия");
+      setCreateError("Specify expiration period");
       return;
     }
 
@@ -48,7 +48,7 @@ export default function CreateAgentSessionPage() {
       if (err instanceof ApiError) {
         setCreateError(err.message);
       } else {
-        setCreateError("Не удалось создать сессию");
+        setCreateError("Failed to create session");
       }
       setIsCreating(false);
     }
@@ -65,14 +65,14 @@ export default function CreateAgentSessionPage() {
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">Новая сессия</h1>
+          <h1 className="text-lg font-semibold text-gray-900">New Session</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Name */}
           <div className="bg-white rounded-2xl shadow-sm px-4 py-4">
             <label className="text-xs text-gray-500 mb-1 block">
-              Имя сессии
+              Session Name
             </label>
             <input
               type="text"
@@ -80,7 +80,7 @@ export default function CreateAgentSessionPage() {
               onChange={(e) => setName(e.target.value)}
               minLength={MIN_NAME_LENGTH}
               maxLength={MAX_NAME_LENGTH}
-              placeholder="Например: Мой CLI агент"
+              placeholder="e.g. Main CLI Agent"
               required
               className="w-full text-base text-gray-900 outline-none"
             />
@@ -89,7 +89,7 @@ export default function CreateAgentSessionPage() {
           {/* Expires in days */}
           <div className="bg-white rounded-2xl shadow-sm px-4 py-4">
             <label className="text-xs text-gray-500 mb-1 block">
-              Срок действия (дней)
+              Expires In (days)
             </label>
             <input
               type="number"
@@ -104,7 +104,7 @@ export default function CreateAgentSessionPage() {
               className="w-full text-lg font-semibold text-gray-900 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <div className="text-xs text-gray-400 mt-1">
-              От {MIN_EXPIRES_DAYS} до {MAX_EXPIRES_DAYS} дней
+              From {MIN_EXPIRES_DAYS} to {MAX_EXPIRES_DAYS} days
             </div>
           </div>
 
@@ -121,7 +121,7 @@ export default function CreateAgentSessionPage() {
             disabled={isCreating}
             className="w-full bg-violet-600 disabled:bg-gray-300 text-white rounded-2xl py-4 font-semibold text-sm hover:bg-violet-700 transition-colors mt-2"
           >
-            {isCreating ? "Создаём..." : "Создать сессию"}
+            {isCreating ? "Creating..." : "Create Session"}
           </button>
         </form>
       </div>

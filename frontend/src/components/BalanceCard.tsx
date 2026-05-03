@@ -20,7 +20,7 @@ export default function BalanceCard() {
         if (err instanceof ApiError) {
           setError(err.message);
         } else {
-          setError("Не удалось загрузить баланс");
+          setError("Failed to load balance");
         }
       } finally {
         setIsLoading(false);
@@ -60,7 +60,7 @@ export default function BalanceCard() {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           {isLoading && (
             <div className="text-2xl font-semibold text-white/60">
-              Загрузка...
+              Loading...
             </div>
           )}
 
@@ -70,7 +70,7 @@ export default function BalanceCard() {
 
           {balance && !isLoading && !error && (
             <div className="text-4xl font-bold tracking-tight">
-              {balance.amountKzt.toLocaleString("ru-RU")}
+              {balance.amountKzt.toLocaleString("en-US")}
               <span className="text-2xl font-medium ml-2 text-white/80">₸</span>
             </div>
           )}

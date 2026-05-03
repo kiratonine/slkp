@@ -2,9 +2,9 @@ import { NavLink } from "react-router";
 import { Home, Key, Settings as SettingsIcon } from "lucide-react";
 
 const NAV_ITEMS = [
-  { to: "/dashboard", icon: Home, label: "Главная" },
-  { to: "/agent-sessions", icon: Key, label: "Сессии" },
-  { to: "/settings", icon: SettingsIcon, label: "Настройки" },
+  { to: "/dashboard", icon: Home, label: "Home" },
+  { to: "/agent-sessions", icon: Key, label: "Sessions" },
+  { to: "/settings", icon: SettingsIcon, label: "Settings" },
 ] as const;
 
 export default function BottomNav() {

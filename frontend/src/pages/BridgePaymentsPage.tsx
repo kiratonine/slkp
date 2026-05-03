@@ -47,7 +47,7 @@ export default function BridgePaymentsPage() {
         if (err instanceof ApiError) {
           setLoadError(err.message);
         } else {
-          setLoadError("Не удалось загрузить платежи");
+          setLoadError("Failed to load payments");
         }
       } finally {
         setIsLoading(false);
@@ -101,7 +101,7 @@ export default function BridgePaymentsPage() {
         {/* Loading */}
         {isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Загрузка...
+            Loading...
           </div>
         )}
 
@@ -115,7 +115,7 @@ export default function BridgePaymentsPage() {
         {/* Empty state */}
         {filteredPayments && filteredPayments.length === 0 && !isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Нет платежей в этой категории
+            No payments in this category
           </div>
         )}
 

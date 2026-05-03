@@ -18,14 +18,14 @@ const STATUS_BADGE_STYLES: Record<BridgePaymentStatus, string> = {
 };
 
 const STATUS_BADGE_LABELS: Record<BridgePaymentStatus, string> = {
-  PENDING: "В обработке",
-  SUCCEEDED: "Успешно",
-  FAILED: "Ошибка",
+  PENDING: "Pending",
+  SUCCEEDED: "Success",
+  FAILED: "Failed",
 };
 
 function getPaymentLabel(payment: BridgePayment): string {
   if (payment.purpose) return payment.purpose;
-  return "Оплата AI агентом";
+  return "AI Agent Payment";
 }
 
 function formatDateGroup(dateString: string): string {
@@ -39,10 +39,10 @@ function formatDateGroup(dateString: string): string {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 
-  if (isSameDay(date, today)) return "Сегодня";
-  if (isSameDay(date, yesterday)) return "Вчера";
+  if (isSameDay(date, today)) return "Today";
+  if (isSameDay(date, yesterday)) return "Yesterday";
 
-  return date.toLocaleDateString("ru-RU", {
+  return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
   });
@@ -84,7 +84,7 @@ export default function LedgerPage() {
         if (err instanceof ApiError) {
           setLoadError(err.message);
         } else {
-          setLoadError("Не удалось загрузить данные");
+          setLoadError("Failed to load data");
         }
       } finally {
         setIsLoading(false);
@@ -126,14 +126,14 @@ export default function LedgerPage() {
             </div>
             {balance ? (
               <div className="text-3xl font-bold">
-                {balance.amountKzt.toLocaleString("ru-RU")}
+                {balance.amountKzt.toLocaleString("en-US")}
                 <span className="text-lg font-medium ml-1 text-white/80">
                   ₸
                 </span>
               </div>
             ) : (
               <div className="text-2xl font-semibold text-white/60">
-                {isLoading ? "Загрузка..." : "—"}
+                {isLoading ? "Loading..." : "—"}
               </div>
             )}
           </div>
@@ -142,7 +142,7 @@ export default function LedgerPage() {
         {/* Loading */}
         {isLoading && !payments && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Загрузка...
+            Loading...
           </div>
         )}
 
@@ -156,7 +156,7 @@ export default function LedgerPage() {
         {/* Empty state */}
         {payments && payments.length === 0 && !isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Операций пока нет
+            No transactions yet
           </div>
         )}
 
@@ -212,7 +212,7 @@ export default function LedgerPage() {
                           <div className="flex items-center gap-1.5">
                             <div className="text-xs text-gray-400">
                               {new Date(payment.createdAt).toLocaleTimeString(
-                                "ru-RU",
+                                "en-US",
                                 { hour: "2-digit", minute: "2-digit" },
                               )}
                             </div>
@@ -224,7 +224,7 @@ export default function LedgerPage() {
                               }`}
                             >
                               {payment.decision === "REJECTED"
-                                ? "Отклонён"
+                                ? "Rejected"
                                 : STATUS_BADGE_LABELS[payment.status]}
                             </span>
                           </div>
@@ -237,7 +237,7 @@ export default function LedgerPage() {
                           >
                             {isSuccess && "-"}
                             {payment.estimatedKztDebit.toLocaleString(
-                              "ru-RU",
+                              "en-US",
                             )}{" "}
                             ₸
                           </div>

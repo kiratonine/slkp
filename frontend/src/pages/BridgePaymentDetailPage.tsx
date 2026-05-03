@@ -90,7 +90,7 @@ export default function BridgePaymentDetailPage() {
         if (err instanceof ApiError) {
           setLoadError(err.message);
         } else {
-          setLoadError("Не удалось загрузить платёж");
+          setLoadError("Failed to load payment");
         }
       } finally {
         setIsLoading(false);
@@ -121,7 +121,7 @@ export default function BridgePaymentDetailPage() {
 
         {isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Загрузка...
+            Loading...
           </div>
         )}
 
@@ -204,13 +204,13 @@ export default function BridgePaymentDetailPage() {
               {payment.estimatedKztDebit !== null && (
                 <FieldRow
                   label="Estimated KZT Debit"
-                  value={`${payment.estimatedKztDebit.toLocaleString("ru-RU")} ₸`}
+                  value={`${payment.estimatedKztDebit.toLocaleString("en-US")} ₸`}
                 />
               )}
               {payment.executedAt && (
                 <FieldRow
                   label="Executed At"
-                  value={new Date(payment.executedAt).toLocaleString("ru-RU")}
+                  value={new Date(payment.executedAt).toLocaleString("en-US")}
                 />
               )}
               {payment.solanaTxSignature && (
@@ -224,8 +224,8 @@ export default function BridgePaymentDetailPage() {
               )}
             </div>
 
-            {/* View on Explorer (only if has tx signature) */}
-            {payment.solanaTxSignature && (
+            {/* View on Explorer or pending notice */}
+            {payment.solanaTxSignature ? (
               <button
                 type="button"
                 onClick={handleViewOnExplorer}
@@ -234,7 +234,11 @@ export default function BridgePaymentDetailPage() {
                 <ExternalLink size={16} />
                 View on Explorer
               </button>
-            )}
+            ) : payment.status === "SUCCEEDED" ? (
+              <div className="text-xs text-gray-400 text-center py-2">
+                Tx Signature not available for this payment
+              </div>
+            ) : null}
           </>
         )}
       </div>

@@ -15,7 +15,7 @@ const HISTORY_LIMIT = 6;
 
 function getPaymentLabel(payment: BridgePayment): string {
   if (payment.purpose) return payment.purpose;
-  return "Оплата AI агентом";
+  return "AI Agent Payment";
 }
 
 const STATUS_BADGE_STYLES: Record<BridgePaymentStatus, string> = {
@@ -25,9 +25,9 @@ const STATUS_BADGE_STYLES: Record<BridgePaymentStatus, string> = {
 };
 
 const STATUS_BADGE_LABELS: Record<BridgePaymentStatus, string> = {
-  PENDING: "В обработке",
-  SUCCEEDED: "Успешно",
-  FAILED: "Ошибка",
+  PENDING: "Pending",
+  SUCCEEDED: "Success",
+  FAILED: "Failed",
 };
 
 function formatDateGroup(dateString: string): string {
@@ -41,10 +41,10 @@ function formatDateGroup(dateString: string): string {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 
-  if (isSameDay(date, today)) return "Сегодня";
-  if (isSameDay(date, yesterday)) return "Вчера";
+  if (isSameDay(date, today)) return "Today";
+  if (isSameDay(date, yesterday)) return "Yesterday";
 
-  return date.toLocaleDateString("ru-RU", {
+  return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
   });
@@ -113,13 +113,11 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button
             type="button"
-            onClick={() =>
-              toast("Функция пополнения скоро будет доступна", { icon: "🚧" })
-            }
+            onClick={() => toast("Top-up coming soon", { icon: "🚧" })}
             className="bg-white rounded-2xl shadow-sm py-3 px-2 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
           >
             <Plus size={16} className="text-violet-600 shrink-0" />
-            <span className="truncate">Пополнить</span>
+            <span className="truncate">Top Up</span>
           </button>
           <Link
             to="/agent-settings"
@@ -132,25 +130,25 @@ export default function DashboardPage() {
 
         {/* History section */}
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900">История</h2>
+          <h2 className="text-base font-semibold text-gray-900">History</h2>
           <Link
             to="/ledger"
             className="text-xs text-violet-600 font-medium flex items-center gap-0.5"
           >
-            Все операции
+            All transactions
             <ChevronRight size={14} />
           </Link>
         </div>
 
         {isLoadingHistory && (
           <div className="text-sm text-gray-400 text-center py-6">
-            Загрузка...
+            Loading...
           </div>
         )}
 
         {payments && payments.length === 0 && !isLoadingHistory && (
           <div className="text-sm text-gray-400 text-center py-6">
-            Операций пока нет
+            No transactions yet
           </div>
         )}
 
@@ -207,7 +205,7 @@ export default function DashboardPage() {
                           <div className="flex items-center gap-1.5">
                             <div className="text-xs text-gray-400">
                               {new Date(payment.createdAt).toLocaleTimeString(
-                                "ru-RU",
+                                "en-US",
                                 { hour: "2-digit", minute: "2-digit" },
                               )}
                             </div>
@@ -219,7 +217,7 @@ export default function DashboardPage() {
                               }`}
                             >
                               {payment.decision === "REJECTED"
-                                ? "Отклонён"
+                                ? "Rejected"
                                 : STATUS_BADGE_LABELS[payment.status]}
                             </span>
                           </div>
@@ -232,7 +230,7 @@ export default function DashboardPage() {
                           >
                             {isSuccess && "-"}
                             {payment.estimatedKztDebit.toLocaleString(
-                              "ru-RU",
+                              "en-US",
                             )}{" "}
                             ₸
                           </div>

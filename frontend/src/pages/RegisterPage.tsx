@@ -29,12 +29,12 @@ export default function RegisterPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Пароли не совпадают");
+      setError("Passwords don't match");
       return;
     }
 
     if (!agreedToTerms) {
-      setError("Необходимо согласиться с условиями");
+      setError("You must agree to the terms");
       return;
     }
 
@@ -46,12 +46,12 @@ export default function RegisterPage() {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.errorCode === "AUTH_EMAIL_ALREADY_EXISTS") {
-          setError("Этот email уже зарегистрирован");
+          setError("This email is already registered");
         } else {
           setError(err.message);
         }
       } else {
-        setError("Не удалось зарегистрироваться. Попробуйте позже.");
+        setError("Failed to register. Please try again later.");
       }
     } finally {
       setIsSubmitting(false);
@@ -59,7 +59,7 @@ export default function RegisterPage() {
   };
 
   const handleTermsClick = () => {
-    toast("Страница условий скоро будет доступна", { icon: "🚧" });
+    toast("Terms page coming soon", { icon: "🚧" });
   };
 
   return (
@@ -102,9 +102,9 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 pr-11 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-violet-400 focus:bg-white transition-colors"
-                placeholder="Минимум 6 символов"
+                placeholder="At least 8 characters"
               />
               <button
                 type="button"
@@ -126,9 +126,9 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 pr-11 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-violet-400 focus:bg-white transition-colors"
-                placeholder="Повторите пароль"
+                placeholder="Repeat password"
               />
               <button
                 type="button"
@@ -179,7 +179,7 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             className="w-full bg-violet-600 disabled:bg-gray-300 text-white rounded-2xl py-3.5 font-semibold text-sm hover:bg-violet-700 transition-colors mt-2"
           >
-            {isSubmitting ? "Регистрируем..." : "Create Account"}
+            {isSubmitting ? "Creating account..." : "Create Account"}
           </button>
         </form>
 

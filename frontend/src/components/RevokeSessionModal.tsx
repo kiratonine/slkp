@@ -22,7 +22,7 @@ export default function RevokeSessionModal({
           type="button"
           onClick={onCancel}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl leading-none w-7 h-7 flex items-center justify-center"
-          aria-label="Закрыть"
+          aria-label="Close"
         >
           ×
         </button>
@@ -53,7 +53,7 @@ export default function RevokeSessionModal({
             disabled={isLoading}
             className="w-full bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white rounded-xl py-3 font-semibold text-sm mb-2 transition-colors"
           >
-            {isLoading ? "Отзываем..." : "Yes, Revoke"}
+            {isLoading ? "Revoking..." : "Yes, Revoke"}
           </button>
           <button
             type="button"
