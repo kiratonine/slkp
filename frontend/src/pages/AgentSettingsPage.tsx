@@ -1,6 +1,7 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
 import PhoneFrame from "../components/PhoneFrame";
 import {
   agentSettingsService,
@@ -8,18 +9,15 @@ import {
 } from "../services/agent-settings/agentSettingsService";
 import { ApiError } from "../services/api/client";
 import type { AgentSettings } from "../types/auth";
-import toast from "react-hot-toast";
 
 export default function AgentSettingsPage() {
   const navigate = useNavigate();
 
-  const [settings, setSettings] = useState<AgentSettings | null>(null);
+  const [, setSettings] = useState<AgentSettings | null>(null);
   const [draft, setDraft] = useState<UpdateAgentSettingsRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -36,7 +34,7 @@ export default function AgentSettingsPage() {
         if (err instanceof ApiError) {
           setLoadError(err.message);
         } else {
-          setLoadError("Не удалось загрузить настройки");
+          setLoadError("Failed to load settings");
         }
       } finally {
         setIsLoading(false);
@@ -55,12 +53,12 @@ export default function AgentSettingsPage() {
     try {
       const updated = await agentSettingsService.updateSettings(draft);
       setSettings(updated);
-      toast.success("Настройки сохранены");
+      toast.success("Settings saved");
     } catch (err) {
       if (err instanceof ApiError) {
         toast.error(err.message);
       } else {
-        toast.error("Не удалось сохранить");
+        toast.error("Failed to save");
       }
     } finally {
       setIsSaving(false);
@@ -79,13 +77,13 @@ export default function AgentSettingsPage() {
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-lg font-semibold text-gray-900">
-            Настройки AI-агента
+            Agent Settings
           </h1>
         </div>
 
         {isLoading && (
           <div className="text-sm text-gray-400 text-center py-8">
-            Загрузка...
+            Loading...
           </div>
         )}
 
@@ -101,10 +99,10 @@ export default function AgentSettingsPage() {
             <div className="bg-white rounded-2xl shadow-sm px-4 py-4 flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium text-gray-900">
-                  Разрешить AI-агенту тратить
+                  Allow AI agent to spend
                 </div>
                 <div className="text-xs text-gray-400 mt-0.5">
-                  {draft.isEnabled ? "Включено" : "Выключено"}
+                  {draft.isEnabled ? "Enabled" : "Disabled"}
                 </div>
               </div>
               <button
@@ -127,7 +125,7 @@ export default function AgentSettingsPage() {
             {/* Daily limit */}
             <div className="bg-white rounded-2xl shadow-sm px-4 py-4">
               <label className="text-xs text-gray-500 mb-1 block">
-                Дневной лимит (₸)
+                Daily Limit (₸)
               </label>
               <input
                 placeholder="10000"
@@ -147,7 +145,7 @@ export default function AgentSettingsPage() {
             {/* Per-transaction limit */}
             <div className="bg-white rounded-2xl shadow-sm px-4 py-4">
               <label className="text-xs text-gray-500 mb-1 block">
-                Лимит на транзакцию (₸)
+                Per Transaction Limit (₸)
               </label>
               <input
                 placeholder="10000"
@@ -172,10 +170,10 @@ export default function AgentSettingsPage() {
             <div className="bg-white rounded-2xl shadow-sm px-4 py-4 flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium text-gray-900">
-                  Подтверждать новых продавцов
+                  Confirm new sellers
                 </div>
                 <div className="text-xs text-gray-400 mt-0.5">
-                  Запрашивать подтверждение при первой оплате
+                  Require confirmation on first payment
                 </div>
               </div>
               <button
@@ -207,7 +205,7 @@ export default function AgentSettingsPage() {
               disabled={isSaving}
               className="w-full bg-violet-600 disabled:bg-gray-300 text-white rounded-2xl py-4 font-semibold text-sm hover:bg-violet-700 transition-colors mt-2"
             >
-              {isSaving ? "Сохраняем..." : "Сохранить"}
+              {isSaving ? "Saving..." : "Save"}
             </button>
           </form>
         )}
