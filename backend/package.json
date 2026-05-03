@@ -7,6 +7,7 @@
     "build": "pnpm -r build",
     "start:api": "pnpm --filter api start:dev",
     "lint": "pnpm -r lint",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "start:render": "node scripts/render-start.mjs"
   }
 }

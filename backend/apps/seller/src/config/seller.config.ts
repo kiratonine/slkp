@@ -4,21 +4,21 @@ export type SellerConfig = {
   payTo: string;
   network: `${string}:${string}`;
   price: string;
-  resourcePath: '/paid/sol';
   facilitatorUrl: string;
 };
 
 export function getSellerConfig(): SellerConfig {
+  const port = Number(process.env.SELLER_PORT ?? 3002);
+
   return {
-    port: Number(process.env.PORT ?? 3002),
-    baseUrl: process.env.SELLER_BASE_URL ?? 'http://localhost:3002',
+    port,
+    baseUrl: process.env.SELLER_BASE_URL ?? `http://localhost:${port}`,
     payTo: process.env.SELLER_SOL_RECEIVER ?? '',
     network: (
-    process.env.X402_NETWORK ?? 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1'
+      process.env.X402_NETWORK ?? 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1'
     ) as `${string}:${string}`,
-    resourcePath: '/paid/sol',
     price: process.env.X402_PRICE_SOL ?? '$0.001',
     facilitatorUrl:
-      process.env.FACILITATOR_URL ?? 'https://facilitator.x402.org',
+      process.env.FACILITATOR_URL ?? 'https://x402.org/facilitator',
   };
 }
