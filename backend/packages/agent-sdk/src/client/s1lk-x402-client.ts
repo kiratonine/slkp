@@ -71,8 +71,10 @@ export class S1lkX402Client {
     });
 
     if (!bridgeResponse.ok) {
+      const errorDetails = await this.readErrorResponse(bridgeResponse);
+
       throw new S1lkX402BridgeRequestError(
-        `Bridge request failed with status ${bridgeResponse.status}`,
+        `Bridge request failed with status ${bridgeResponse.status}. ${errorDetails}`,
       );
     }
 
@@ -220,6 +222,20 @@ export class S1lkX402Client {
       throw new S1lkX402BridgeRequestError(
         `Bridge confirm failed with status ${response.status}`,
       );
+    }
+  }
+
+  private async readErrorResponse(response: Response): Promise<string> {
+    try {
+      const bodyText = await response.clone().text();
+
+      if (bodyText.length === 0) {
+        return 'Empty response body.';
+      }
+
+      return `Response body: ${bodyText}`;
+    } catch {
+      return 'Failed to read response body.';
     }
   }
 }

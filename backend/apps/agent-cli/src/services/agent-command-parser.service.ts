@@ -7,7 +7,8 @@ export class AgentCommandParserService {
         normalized.includes('s1lk x402 bridge')) &&
       (normalized.includes('подключи') ||
         normalized.includes('connect') ||
-        normalized.includes('enable'))
+        normalized.includes('enable') ||
+        normalized.includes('attach'))
     );
   }
 
@@ -18,7 +19,9 @@ export class AgentCommandParserService {
       normalized.includes('premium sol quote') ||
       normalized.includes('premium quote') ||
       normalized.includes('получи premium sol quote') ||
-      normalized.includes('получи premium quote')
+      normalized.includes('получи premium quote') ||
+      normalized.includes('get premium sol quote') ||
+      normalized.includes('get premium quote')
     );
   }
 }

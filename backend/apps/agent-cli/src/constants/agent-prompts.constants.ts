@@ -1,17 +1,17 @@
 export const AGENT_MESSAGES = {
   started: 'AI Agent started.',
-  enterCommand: 'Введите команду:',
-  bridgeDetected: '[agent] Обнаружена команда подключения S1lk x402 Bridge',
-  bridgeInit: '[agent] Подключаю payment capability...',
-  bridgeEnabled: '[agent] S1lk x402 Bridge успешно подключён',
-  askSessionToken: '[agent] Вставьте sessionToken:',
-  sessionStored: '[agent] Session token сохранён в runtime',
+  enterCommand: 'Enter command:',
+  bridgeDetected: '[agent] S1lk x402 Bridge connection command detected',
+  bridgeInit: '[agent] Enabling x402 payment capability...',
+  bridgeEnabled: '[agent] S1lk x402 Bridge connected successfully',
+  askSessionToken: '[agent] Paste your sessionToken:',
+  sessionStored: '[agent] Session token stored in runtime memory',
   readyForPayments:
-    '[agent] Теперь я могу оплачивать x402-запросы через S1lk x402 Bridge',
-  unknownCommand: '[agent] Неизвестная команда. Попробуйте снова.',
+    '[agent] I can now pay x402 requests through S1lk x402 Bridge',
+  unknownCommand: '[agent] Unknown command. Please try again.',
   bridgeNotEnabled:
-    '[agent] S1lk x402 Bridge ещё не подключён. Сначала подключите решение.',
+    '[agent] S1lk x402 Bridge is not connected yet. Connect it first.',
   sessionMissing:
-    '[agent] Session token ещё не задан. Сначала подключите bridge и вставьте token.',
-  runningPremiumFlow: '[agent] Выполняю premium payment flow...',
+    '[agent] Session token is missing. Connect the bridge and paste your token first.',
+  runningPremiumFlow: '[agent] Running premium x402 payment flow...',
 } as const;
